@@ -1,207 +1,132 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-    <meta name="theme-color" content="#16a34a">
-
-    <meta name="apple-mobile-web-app-capable" content="yes">
-
-    <meta name="mobile-web-app-capable" content="yes">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>FazendaJS</title>
 
-    <link rel="manifest" href="manifest.json">
+    <!-- PWA -->
+    <link rel="manifest" href="./manifest.json" />
+    <meta name="theme-color" content="#16a34a" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
 
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-    <link rel="stylesheet" href="assets/css/style.css">
-
+    <!-- CSS -->
+    <link rel="stylesheet" href="./assets/css/style.css" />
 </head>
 
 <body class="bg-gray-100 text-gray-900 font-sans min-h-screen transition-colors">
 
-    <!-- ELEMENTOS OBRIGATÓRIOS -->
-
+    <!-- TOAST -->
     <div id="toast"></div>
 
+    <!-- DATALIST -->
     <datalist id="opcoesLotes"></datalist>
 
-    <div id="painelLote" class="hidden"></div>
-
-    <button id="btnVoltar" class="hidden"></button>
-
-    <div id="acoesHeader"></div>
-
-    <h1 id="tituloHeader" class="hidden"></h1>
-
-    <div id="tela-perfil" class="hidden"></div>
-
-    <div id="perfilHistorico" class="hidden"></div>
-
-    <div id="perfilUltimoStatus" class="hidden"></div>
-
-    <div id="perfilLoteBadge" class="hidden"></div>
-
-    <input id="perfilLote" class="hidden">
-
-    <input id="perfilBrincoAtual" class="hidden">
-
-    <div id="listaLogs" class="hidden"></div>
-
-    <div id="painelLogs" class="hidden"></div>
-
-    <i id="iconeSetaLogs" class="hidden"></i>
-
-    <i id="iconeSetaDiag" class="hidden"></i>
-
-    <div id="formDiagnostico" class="hidden"></div>
-
-    <input id="partoData" class="hidden">
-
-    <input id="partoSexo" class="hidden">
-
-    <input id="partoObs" class="hidden">
-
-    <input id="diagAno" class="hidden">
-
-    <input id="diagSituacao" class="hidden">
-
-    <input id="diagObs" class="hidden">
-
-    <input id="inputImportar" type="file" class="hidden">
-
-    <span id="numNovoBrinco" class="hidden"></span>
-
-    <input id="novoLote" class="hidden">
-
-    <i id="iconeTema" class="hidden"></i>
-
     <!-- HEADER -->
-
-    <header
-        class="app-header bg-jsgreen-900 text-white p-4 shadow-md sticky top-0 z-10 flex justify-between items-center">
+    <header class="app-header bg-jsgreen-900 text-white p-4 shadow-md sticky top-0 z-10 flex justify-between items-center">
 
         <div class="flex items-center gap-3">
-
-            <div
-                class="w-14 h-14 rounded-2xl bg-green-600 flex items-center justify-center shadow-lg">
-
-                <i class="fa-solid fa-cow text-2xl"></i>
-
-            </div>
+            <div class="text-3xl">🐄</div>
 
             <div>
-
-                <h1 class="text-4xl font-black leading-none">
+                <h1 class="text-3xl font-black leading-none">
                     Fazenda JS
                 </h1>
 
-                <span class="text-sm opacity-70">
-                    Gestão Inteligente de Matrizes v11
+                <span class="text-sm opacity-80">
+                    v11
                 </span>
-
             </div>
-
         </div>
 
         <div class="flex items-center gap-3">
 
-            <button onclick="alternarTema()" class="header-btn">
-                <i class="fa-solid fa-moon"></i>
+            <button id="btnTema"
+                class="btn-circle"
+                onclick="alternarTema()">
+                🌙
             </button>
 
-            <button onclick="exportarBackup()" class="header-btn">
-                <i class="fa-solid fa-download"></i>
+            <button class="btn-circle"
+                onclick="exportarBackup()">
+                ⬇️
             </button>
 
-            <button onclick="gerarPDFGeral()" class="header-btn">
-                <i class="fa-solid fa-file-pdf"></i>
+            <button class="btn-circle"
+                onclick="importarBackup()">
+                ⬆️
+            </button>
+
+            <button class="btn-pdf"
+                onclick="gerarPDFPlantel()">
                 PDF
             </button>
 
         </div>
-
     </header>
 
     <!-- MAIN -->
+    <main class="max-w-xl mx-auto p-4 mt-2">
 
-    <main id="tela-lista" class="max-w-5xl mx-auto p-5">
+        <!-- STATUS -->
+        <div class="flex justify-end mb-4">
+            <div class="status-badge">
+                💾 LocalStorage ativo
+            </div>
+        </div>
 
-        <!-- BUSCA -->
+        <!-- CARD BUSCA -->
+        <section class="card-app">
 
-        <section class="glass-card p-8 mb-8">
-
-            <h2 class="text-5xl font-black text-center mb-8">
-
+            <h2 class="titulo-card">
                 Buscar ou Cadastrar Matriz
-
             </h2>
 
-            <div class="space-y-5">
+            <input
+                id="buscaBrinco"
+                type="text"
+                placeholder="DIGITE O NÚMERO OU NOME..."
+                class="input-app"
+                oninput="onBuscaInput()"
+            />
 
-                <input
-                    type="text"
-                    id="buscaBrinco"
-                    oninput="onBuscaInput()"
-                    class="input-app"
-                    placeholder="DIGITE O NÚMERO OU NOME..."
-                    autocomplete="off">
-
-                <button
-                    id="btnCadastrarNovo"
-                    onclick="cadastrarMatrizRapido()"
-                    class="btn-app-green">
-
-                    <i class="fa-solid fa-plus"></i>
-
-                    Cadastrar Matriz
-
-                </button>
-
-            </div>
+            <button
+                class="btn-primary"
+                onclick="cadastrarMatrizRapido()">
+                + Cadastrar Matriz
+            </button>
 
         </section>
 
-        <!-- FILTRO -->
+        <!-- FILTROS -->
+        <section class="card-app mt-5">
 
-        <section class="glass-card p-5 mb-8">
-
-            <label class="block text-2xl font-bold mb-4">
-
+            <h3 class="text-xl font-bold mb-3">
                 Filtrar por lote
-
-            </label>
+            </h3>
 
             <div class="flex gap-3">
 
                 <select
                     id="filtroLote"
-                    onchange="filtrarMatrizes()"
-                    class="input-app">
+                    class="input-app flex-1"
+                    onchange="filtrarMatrizes()">
 
                     <option value="">
-
                         Todos os lotes
-
                     </option>
 
                 </select>
 
                 <button
-                    onclick="limparFiltros()"
-                    class="btn-app-gray">
-
+                    class="btn-secondary"
+                    onclick="limparFiltros()">
                     Limpar
-
                 </button>
 
             </div>
@@ -209,27 +134,100 @@
         </section>
 
         <!-- RESUMO -->
+        <section class="grid grid-cols-3 gap-4 mt-6">
 
-        <div
-            id="resumoPlantel"
-            class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+            <div class="card-resumo">
+                <div
+                    id="totalMatrizes"
+                    class="numero-branco">
+                    0
+                </div>
 
-        </div>
+                <div class="label-resumo">
+                    TOTAL
+                </div>
+            </div>
+
+            <div class="card-resumo">
+                <div
+                    id="totalPrenhas"
+                    class="numero-verde">
+                    0
+                </div>
+
+                <div class="label-resumo">
+                    PRENHAS
+                </div>
+            </div>
+
+            <div class="card-resumo">
+                <div
+                    id="totalVazias"
+                    class="numero-vermelho">
+                    0
+                </div>
+
+                <div class="label-resumo">
+                    VAZIAS
+                </div>
+            </div>
+
+        </section>
+
+        <!-- RESUMO PLANTEL -->
+        <div id="resumoPlantel"></div>
 
         <!-- LISTA -->
-
         <ul
             id="listaContatos"
-            class="space-y-5 pb-24">
-
+            class="mt-6 space-y-4">
         </ul>
 
     </main>
 
-    <!-- SCRIPT -->
+    <!-- MENU MOBILE -->
+    <nav class="bottom-nav">
 
-    <script src="assets/js/app.js"></script>
+        <button class="nav-btn ativo">
+            🏠
+            <span>Início</span>
+        </button>
+
+        <button class="nav-btn">
+            📊
+            <span>Relatórios</span>
+        </button>
+
+        <button class="nav-btn">
+            ☁️
+            <span>Sync</span>
+        </button>
+
+        <button class="nav-btn">
+            ⚙️
+            <span>Config</span>
+        </button>
+
+    </nav>
+
+    <!-- BOTÃO FLUTUANTE -->
+    <button
+        class="fab"
+        onclick="cadastrarMatrizRapido()">
+
+        +
+
+    </button>
+
+    <!-- SERVICE WORKER -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js');
+        }
+    </script>
+
+    <!-- APP -->
+    <script src="./assets/js/app.js"></script>
 
 </body>
-
 </html>
