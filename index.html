@@ -2,38 +2,73 @@
 <html lang="pt-BR">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FazendaJS</title>
+    <meta charset="UTF-8" />
 
-    <meta name="theme-color" content="#16a34a">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
-    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#16a34a" />
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+
+    <meta name="mobile-web-app-capable" content="yes" />
+
+    <title>Fazenda JS</title>
+
+    <link rel="manifest" href="manifest.json" />
 
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <link rel="stylesheet" href="assets/css/style.css">
-
     <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+    <link rel="stylesheet" href="assets/css/style.css" />
+
 </head>
 
 <body class="bg-gray-100 text-gray-900 font-sans min-h-screen transition-colors">
+
+    <!-- ELEMENTOS OBRIGATÓRIOS DO SISTEMA -->
 
     <div id="toast"></div>
 
     <datalist id="opcoesLotes"></datalist>
 
-    <header class="app-header bg-jsgreen-900 text-white p-4 shadow-md sticky top-0 z-10 flex justify-between items-center">
-        <div class="flex items-center">
-            <h1 class="text-2xl font-black flex items-center gap-2">
-                <i class="fa-solid fa-cow"></i>
-                Fazenda JS
-                <span class="text-sm font-normal opacity-70">v11</span>
-            </h1>
+    <div id="painelLote" class="hidden"></div>
+
+    <button id="btnVoltar" class="hidden"></button>
+
+    <div id="acoesHeader" class="hidden"></div>
+
+    <h1 id="tituloHeader" class="hidden"></h1>
+
+    <div id="tela-perfil" class="hidden"></div>
+
+    <!-- HEADER -->
+
+    <header
+        class="app-header bg-jsgreen-900 text-white p-4 shadow-md sticky top-0 z-10 flex justify-between items-center">
+
+        <div class="flex items-center gap-3">
+
+            <div class="w-12 h-12 rounded-2xl bg-green-600 flex items-center justify-center shadow-lg">
+                <i class="fa-solid fa-cow text-2xl"></i>
+            </div>
+
+            <div>
+                <h1 class="text-3xl font-black leading-none">
+                    Fazenda JS
+                </h1>
+
+                <span class="text-sm opacity-70">
+                    Gestão Inteligente de Matrizes v11
+                </span>
+            </div>
+
         </div>
 
-        <div class="flex gap-3">
+        <div class="flex items-center gap-3">
+
             <button onclick="alternarTema()" class="header-btn">
                 <i class="fa-solid fa-moon"></i>
             </button>
@@ -42,60 +77,116 @@
                 <i class="fa-solid fa-download"></i>
             </button>
 
-            <button onclick="gerarPDFGeral()" class="header-btn bg-white text-black">
-                <i class="fa-solid fa-file-pdf"></i> PDF
+            <button onclick="gerarPDFGeral()" class="header-btn">
+                <i class="fa-solid fa-file-pdf"></i>
+                PDF
             </button>
+
         </div>
+
     </header>
 
-    <main class="max-w-3xl mx-auto p-4">
+    <!-- MAIN -->
 
-        <section class="glass-card p-6 mb-6">
-            <h2 class="text-3xl font-black text-center mb-6">
+    <main id="tela-lista" class="max-w-4xl mx-auto p-4">
+
+        <!-- CARD PRINCIPAL -->
+
+        <section class="glass-card p-8 mb-8">
+
+            <h2 class="text-5xl font-black text-center mb-8">
                 Buscar ou Cadastrar Matriz
             </h2>
 
-            <input
-                type="text"
-                id="buscaBrinco"
-                oninput="onBuscaInput()"
-                class="input-app"
-                placeholder="DIGITE O NÚMERO OU NOME..."
-            >
+            <div class="space-y-5">
 
-            <button
-                id="btnCadastrarNovo"
-                onclick="cadastrarMatrizRapido()"
-                class="btn-app-green mt-5"
-            >
-                <i class="fa-solid fa-plus"></i>
-                Cadastrar Matriz
-            </button>
+                <input
+                    type="text"
+                    id="buscaBrinco"
+                    oninput="onBuscaInput()"
+                    class="input-app"
+                    placeholder="DIGITE O NÚMERO OU NOME..."
+                    autocomplete="off"
+                />
+
+                <!-- CAMPOS OCULTOS NECESSÁRIOS -->
+
+                <input type="hidden" id="novoLote" />
+
+                <span id="numNovoBrinco" class="hidden"></span>
+
+                <!-- BOTÃO -->
+
+                <button
+                    id="btnCadastrarNovo"
+                    onclick="cadastrarMatrizRapido()"
+                    class="btn-app-green">
+
+                    <i class="fa-solid fa-plus"></i>
+
+                    Cadastrar Matriz
+
+                </button>
+
+            </div>
+
         </section>
 
-        <section class="glass-card p-4 mb-6">
-            <label class="font-bold block mb-2">
+        <!-- FILTROS -->
+
+        <section class="glass-card p-5 mb-8">
+
+            <label class="block text-xl font-bold mb-4">
                 Filtrar por lote
             </label>
 
             <div class="flex gap-3">
-                <select id="filtroLote" onchange="filtrarMatrizes()" class="input-app">
-                    <option value="">Todos os lotes</option>
+
+                <select
+                    id="filtroLote"
+                    onchange="filtrarMatrizes()"
+                    class="input-app">
+
+                    <option value="">
+                        Todos os lotes
+                    </option>
+
                 </select>
 
-                <button onclick="limparFiltros()" class="btn-app-gray">
+                <button
+                    onclick="limparFiltros()"
+                    class="btn-app-gray">
+
                     Limpar
+
                 </button>
+
             </div>
+
         </section>
 
-        <div id="resumoPlantel" class="grid grid-cols-3 gap-4 mb-6"></div>
+        <!-- RESUMO -->
 
-        <ul id="listaContatos" class="space-y-4"></ul>
+        <div
+            id="resumoPlantel"
+            class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+
+        </div>
+
+        <!-- LISTA -->
+
+        <ul
+            id="listaContatos"
+            class="space-y-5 pb-24">
+
+        </ul>
 
     </main>
+
+    <!-- JS -->
 
     <script src="assets/js/app.js"></script>
 
 </body>
+
 </html>
