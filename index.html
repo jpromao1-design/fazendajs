@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#14532d">
+    <title>FazendaJS App</title>
+    <meta name="description" content="FazendaJS - Gestão de Matrizes Bovinas">
+    <link rel="manifest" href="./manifest.json">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        jsgreen: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            700: '#15803d',
+                            900: '#14532d'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link rel="stylesheet" href="./assets/css/style.css">
+</head>
+
+<body class="bg-gray-100 text-gray-900 font-sans min-h-screen transition-colors">
+
+    <div id="installBanner" class="install-banner escondido">
+        <div>
+            <strong>Instalar FazendaJS</strong>
+            <span>Adicionar o sistema à tela inicial do celular.</span>
+        </div>
+        <button id="btnInstalarApp" type="button">Instalar</button>
+    </div>
+
+    <div id="syncBadge" class="sync-badge">
+        <i class="fa-solid fa-database"></i> LocalStorage ativo
+    </div>
+
+    <div id="toast"></div>
+
+    <datalist id="opcoesLotes"></datalist>
+
+    <header class="app-header bg-jsgreen-900 text-white p-4 shadow-md sticky top-0 z-10 flex justify-between items-center">
+        <div class="flex items-center min-w-0">
+            <button id="btnVoltar" onclick="mostrarTela('lista')" class="escondido mr-3 text-white hover:text-gray-300" title="Voltar">
+                <i class="fa-solid fa-arrow-left fa-xl"></i>
+            </button>
+            <h1 id="tituloHeader" class="text-xl font-bold truncate">
+                <i class="fa-solid fa-cow mr-2"></i>Fazenda JS
+                <span class="text-xs font-normal text-gray-300 ml-1">v11</span>
+            </h1>
+        </div>
+
+        <div id="acoesHeader" class="flex gap-2 shrink-0">
+            <input type="file" id="inputImportar" class="escondido" accept=".json,application/json" onchange="importarDados(event)">
+
+            <button onclick="alternarTema()" class="bg-jsgreen-700 hover:bg-jsgreen-500 text-white px-3 py-2 rounded font-bold shadow text-sm transition" title="Alternar tema claro/escuro">
+                <i id="iconeTema" class="fa-solid fa-moon"></i>
+            </button>
+
+            <button onclick="document.getElementById('inputImportar').click()" class="bg-jsgreen-700 hover:bg-jsgreen-500 text-white px-3 py-2 rounded font-bold shadow text-sm transition" title="Importar Backup">
+                <i class="fa-solid fa-upload"></i>
+            </button>
+
+            <button onclick="exportarBackup()" class="bg-jsgreen-700 hover:bg-jsgreen-500 text-white px-3 py-2 rounded font-bold shadow text-sm transition" title="Fazer Backup">
+                <i class="fa-solid fa-download"></i>
+            </button>
+
+            <button onclick="gerarPDFGeral()" class="bg-white text-jsgreen-900 px-3 py-2 rounded font-bold shadow text-sm" title="Gerar PDF geral">
+                <i class="fa-solid fa-file-pdf"></i> PDF
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-xl mx-auto p-4 mt-2">
+
+        <div id="tela-lista">
+
+            <div class="card-base bg-white p-4 rounded-xl shadow-md mb-4 border-2 border-jsgreen-500">
+                <label class="block text-gray-700 dark:text-gray-200 font-bold mb-2 text-center text-lg">Buscar ou Cadastrar Matriz</label>
+
+                <input
+                    type="text"
+                    id="buscaBrinco"
+                    oninput="onBuscaInput()"
+                    class="input-gigante w-full rounded-lg border-gray-300 border focus:border-jsgreen-700 focus:ring-0 bg-gray-50"
+                    placeholder="Digite o número ou nome..."
+                    autocapitalize="characters"
+                    maxlength="30"
+                    autocomplete="off"
+                >
+
+                <div id="painelLote" class="escondido mt-3 border-t pt-3">
+                    <label class="block text-gray-600 dark:text-gray-300 font-bold mb-1 text-sm">
+                        Lote Inicial <span class="font-normal text-gray-400">(Opcional)</span>
+                    </label>
+                    <input
+                        type="text"
+                        id="novoLote"
+                        list="opcoesLotes"
+                        class="w-full text-base p-3 rounded-lg border border-gray-300 bg-gray-50"
+                        placeholder="Ex: Lote A, Piquete 3..."
+                        maxlength="40"
+                        autocomplete="off"
+                    >
+                </div>
+
+                <button id="btnCadastrarNovo" onclick="cadastrarMatrizRapido()" class="w-full bg-jsgreen-700 text-white font-bold py-3 px-4 rounded-lg mt-3 hover:bg-jsgreen-900 text-lg shadow-lg transition">
+                    <i class="fa-solid fa-plus mr-2"></i>Cadastrar Matriz <span id="numNovoBrinco"></span>
+                </button>
+            </div>
+
+            <div class="card-base bg-white rounded-xl shadow-sm border p-3 mb-4">
+                <label class="block text-gray-700 dark:text-gray-200 font-bold mb-1 text-sm">
+                    Filtrar por lote
+                </label>
+                <div class="flex gap-2">
+                    <select id="filtroLote" onchange="filtrarMatrizes()" class="flex-1 text-base p-3 rounded-lg border border-gray-300 bg-gray-50">
+                        <option value="">Todos os lotes</option>
+                    </select>
+                    <button onclick="limparFiltros()" class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 px-3 rounded-lg font-bold">
+                        Limpar
+                    </button>
+                </div>
+            </div>
+
+            <div id="resumoPlantel" class="grid grid-cols-3 gap-2 mb-4"></div>
+
+            <ul id="listaContatos" class="space-y-2 pb-10"></ul>
+        </div>
+
+        <div id="tela-perfil" class="escondido space-y-4 pb-10">
+            <input type="hidden" id="perfilBrincoAtual">
+
+            <div class="card-base bg-white rounded-xl shadow-md p-6 text-center border-t-8 border-jsgreen-700">
+                <p class="text-gray-500 dark:text-gray-300 font-semibold uppercase tracking-widest text-sm">Matriz</p>
+                <h2 id="perfilNome" class="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white my-2 break-words">--</h2>
+                <div id="perfilUltimoStatus" class="inline-block px-4 py-1 rounded-full text-sm font-bold bg-gray-200 mt-1">-</div>
+                <div class="mt-2">
+                    <span id="perfilLoteBadge" class="escondido inline-block px-3 py-1 rounded-full text-xs font-bold bg-orange-100 text-orange-700 mt-1"></span>
+                </div>
+                <div class="mt-4 flex gap-2">
+                    <button onclick="enviarWhatsAppPerfil()" class="flex-1 border-2 border-green-500 text-green-600 font-bold py-2 rounded-lg hover:bg-green-50 dark:hover:bg-green-950">
+                        <i class="fa-brands fa-whatsapp fa-lg mr-2"></i>WhatsApp
+                    </button>
+                    <button onclick="gerarPDFIndividual()" class="flex-1 border-2 border-red-400 text-red-500 font-bold py-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-950">
+                        <i class="fa-solid fa-file-pdf fa-lg mr-2"></i>Ficha PDF
+                    </button>
+                </div>
+            </div>
+
+            <div class="card-base bg-white rounded-xl shadow-md p-5 border border-gray-200">
+                <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-3">
+                    <i class="fa-solid fa-layer-group mr-2 text-orange-500"></i>Lote / Grupo
+                    <span class="font-normal text-sm text-gray-400">(Opcional)</span>
+                </h3>
+                <div class="flex gap-2">
+                    <input type="text" id="perfilLote" list="opcoesLotes" class="flex-1 text-lg p-3 rounded border border-gray-400 bg-gray-50" placeholder="Ex: Lote A, Piquete 3..." maxlength="40">
+                    <button onclick="salvarLote()" class="bg-orange-500 text-white font-bold px-4 rounded-lg hover:bg-orange-700">Salvar</button>
+                </div>
+            </div>
+
+            <div class="card-base bg-white rounded-xl shadow-md p-5 border border-gray-200">
+                <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4 border-b pb-2">
+                    <i class="fa-solid fa-baby mr-2 text-jsgreen-700"></i>Nascimento
+                </h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 dark:text-gray-200 font-bold mb-1">Data do Parto</label>
+                        <input type="date" id="partoData" class="w-full text-lg p-3 rounded border border-gray-400 bg-gray-50">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 dark:text-gray-200 font-bold mb-1">Sexo do Bezerro</label>
+                        <select id="partoSexo" class="w-full text-lg p-3 rounded border border-gray-400 bg-gray-50">
+                            <option value="Macho">Macho</option>
+                            <option value="Fêmea">Fêmea</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 dark:text-gray-200 font-bold mb-1">
+                            Observação <span class="font-normal text-sm text-gray-500">(Opcional)</span>
+                        </label>
+                        <input type="text" id="partoObs" class="w-full text-lg p-3 rounded border border-gray-400 bg-gray-50" placeholder="Ex: Parto distócico, bezerro fraco..." maxlength="120">
+                    </div>
+                    <button onclick="salvarParto()" class="w-full bg-jsgreen-700 text-white font-bold py-4 rounded-lg text-lg shadow hover:bg-jsgreen-900">
+                        SALVAR NASCIMENTO
+                    </button>
+                </div>
+            </div>
+
+            <div class="card-base bg-white rounded-xl shadow-md p-5 border border-gray-200">
+                <button onclick="toggleDiagnostico()" class="w-full flex justify-between items-center text-xl font-bold text-gray-800 dark:text-gray-100 hover:text-jsgreen-700 focus:outline-none">
+                    <span><i class="fa-solid fa-stethoscope mr-2 text-blue-600"></i>Lançar Diagnóstico</span>
+                    <i id="iconeSetaDiag" class="fa-solid fa-chevron-down text-gray-400"></i>
+                </button>
+
+                <div id="formDiagnostico" class="escondido mt-4 pt-4 border-t space-y-4">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-gray-700 dark:text-gray-200 font-bold mb-1">Ano</label>
+                            <input type="number" id="diagAno" class="w-full text-lg p-3 rounded border border-gray-400 bg-gray-50 text-center font-bold" min="2000" max="2100">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 dark:text-gray-200 font-bold mb-1">Resultado</label>
+                            <select id="diagSituacao" class="w-full text-lg p-3 rounded border border-gray-400 bg-white font-bold">
+                                <option value="Prenha">Prenha</option>
+                                <option value="Vazia">Vazia</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-700 dark:text-gray-200 font-bold mb-1">
+                            Observação <span class="font-normal text-sm text-gray-500">(Opcional)</span>
+                        </label>
+                        <input type="text" id="diagObs" class="w-full text-lg p-3 rounded border border-gray-400 bg-gray-50" placeholder="Ex: Cisto folicular..." maxlength="120">
+                    </div>
+
+                    <button onclick="salvarDiagnostico()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-lg text-lg shadow hover:bg-blue-800">
+                        SALVAR DIAGNÓSTICO
+                    </button>
+                </div>
+            </div>
+
+            <div class="card-base bg-white rounded-xl shadow-md p-5 border border-gray-200">
+                <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-3">
+                    <i class="fa-solid fa-clock-rotate-left mr-2"></i>Histórico Completo
+                </h3>
+                <div id="perfilHistorico" class="text-sm text-gray-600 dark:text-gray-300 space-y-2"></div>
+
+                <button onclick="excluirMatriz()" class="mt-6 w-full text-red-500 font-bold py-2 hover:bg-red-50 dark:hover:bg-red-950 rounded border border-red-100">
+                    Excluir Animal do Sistema
+                </button>
+            </div>
+
+            <div class="card-base bg-white rounded-xl shadow-md p-5 border border-gray-200">
+                <button onclick="toggleLogs()" class="w-full flex justify-between items-center text-lg font-bold text-gray-800 dark:text-gray-100 hover:text-jsgreen-700 focus:outline-none">
+                    <span><i class="fa-solid fa-shield-halved mr-2 text-gray-500"></i>Log local de alterações</span>
+                    <i id="iconeSetaLogs" class="fa-solid fa-chevron-down text-gray-400"></i>
+                </button>
+                <div id="painelLogs" class="escondido mt-4 pt-4 border-t">
+                    <div id="listaLogs" class="text-xs text-gray-600 dark:text-gray-300 space-y-1"></div>
+                    <button onclick="limparLogs()" class="mt-3 w-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 font-bold py-2 rounded">
+                        Limpar logs locais
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // ============================================================
+        // CONFIGURAÇÃO E ESTADO
+        // ============================================================
+        const DB = {
+            plantel: 'fazendaJsPlantelV11',
+            plantelV10: 'fazendaJsPlantelV10',
+            plantelV9: 'fazendaJsPlantelV9',
+            plantelV8: 'fazendaJsPlantelV8',
+            logs: 'fazendaJsLogsV11',
+            tema: 'fazendaJsTemaV11',
+            backupAuto: 'fazendaJsBackupAutoV11'
+        };
+
+        const LIMITES = {
+            brinco: 30,
+            lote: 40,
+            observacao: 120,
+            registrosLog: 300
+        };
+
+        let plantel = [];
+
+        // ============================================================
+        // UTILITÁRIOS DE SEGURANÇA E VALIDAÇÃO
+        // ============================================================
+        function textoSeguro(valor) {
+            return String(valor ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function normalizarTexto(valor, limite = 120) {
+            return String(valor ?? '')
+                .trim()
+                .replace(/\s+/g, ' ')
+                .slice(0, limite);
+      <script src="./assets/js/app.js"></script>

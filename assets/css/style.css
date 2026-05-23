@@ -1,0 +1,300 @@
+/* =========================================================
+   FazendaJS - style.css
+   Visual estilo aplicativo preservando os IDs/classes do sistema original.
+========================================================= */
+
+.input-gigante {
+            font-size: 1.25rem;
+            padding: 1rem;
+            text-align: center;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .escondido {
+            display: none !important;
+        }
+
+        #toast {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: bold;
+            color: white;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            max-width: 92vw;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        #toast.visivel {
+            opacity: 1;
+        }
+
+        .card-base {
+            background: white;
+        }
+
+        .dark .card-base {
+            background: #111827;
+            color: #f9fafb;
+            border-color: #374151;
+        }
+
+        .dark input,
+        .dark select,
+        .dark textarea {
+            background: #1f2937 !important;
+            color: #f9fafb !important;
+            border-color: #4b5563 !important;
+        }
+
+        .dark body {
+            background: #030712;
+            color: #f9fafb;
+        }
+
+:root {
+    --app-bg: #0f172a;
+    --app-card: rgba(17, 24, 39, .82);
+    --app-card-2: rgba(15, 23, 42, .92);
+    --app-border: rgba(255,255,255,.08);
+    --app-primary: #22c55e;
+    --app-primary-dark: #14532d;
+    --app-muted: #9ca3af;
+    --app-text: #f9fafb;
+}
+
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background: radial-gradient(circle at top left, #1f5131 0%, #0f172a 34%, #020617 100%) !important;
+    color: var(--app-text) !important;
+    min-height: 100vh;
+    padding-bottom: 118px;
+    -webkit-font-smoothing: antialiased;
+}
+
+.app-header {
+    background: rgba(15, 23, 42, .82) !important;
+    backdrop-filter: blur(18px);
+    border-bottom: 1px solid var(--app-border);
+}
+
+main {
+    max-width: 620px !important;
+}
+
+.card-base,
+#tela-lista > div,
+#tela-perfil > div {
+    background: var(--app-card) !important;
+    color: var(--app-text) !important;
+    border: 1px solid var(--app-border) !important;
+    border-radius: 24px !important;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 14px 35px rgba(0,0,0,.35), inset 0 1px 1px rgba(255,255,255,.04) !important;
+}
+
+#tela-lista > div:first-child {
+    border: 1px solid rgba(34,197,94,.45) !important;
+}
+
+.card-base:hover,
+#listaContatos li:hover {
+    transform: translateY(-1px);
+}
+
+label, h1, h2, h3, p, span, div {
+    color: inherit;
+}
+
+.text-gray-900, .text-gray-800, .text-gray-700 {
+    color: #f9fafb !important;
+}
+
+.text-gray-600, .text-gray-500, .text-gray-400, .text-gray-300 {
+    color: #cbd5e1 !important;
+}
+
+input, select, textarea, .input-gigante {
+    background: #0b1220 !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255,255,255,.10) !important;
+    border-radius: 18px !important;
+    outline: none !important;
+}
+
+input:focus, select:focus, textarea:focus, .input-gigante:focus {
+    border-color: var(--app-primary) !important;
+    box-shadow: 0 0 0 4px rgba(34,197,94,.16) !important;
+}
+
+button {
+    border-radius: 16px !important;
+    transition: transform .15s ease, opacity .15s ease, background .15s ease;
+}
+
+button:active {
+    transform: scale(.98);
+}
+
+.bg-jsgreen-700, .bg-jsgreen-900 {
+    background: linear-gradient(135deg, #22c55e, #14532d) !important;
+}
+
+#btnCadastrarNovo,
+button[onclick="salvarParto()"],
+button[onclick="salvarDiagnostico()"] {
+    background: linear-gradient(135deg, #22c55e, #14532d) !important;
+    box-shadow: 0 12px 25px rgba(0,0,0,.28);
+}
+
+#listaContatos li {
+    background: var(--app-card) !important;
+    border: 1px solid var(--app-border) !important;
+    border-radius: 22px !important;
+    box-shadow: 0 10px 26px rgba(0,0,0,.28);
+}
+
+#resumoPlantel > div {
+    min-height: 82px;
+}
+
+#perfilNome {
+    color: #ffffff !important;
+}
+
+#toast {
+    bottom: 118px;
+    background: #14532d;
+    border-radius: 18px;
+    box-shadow: 0 12px 28px rgba(0,0,0,.35);
+}
+
+.install-banner {
+    position: fixed;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 99999;
+    width: min(92vw, 460px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 20px;
+    background: rgba(15, 23, 42, .94);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,.10);
+    box-shadow: 0 15px 40px rgba(0,0,0,.45);
+    backdrop-filter: blur(18px);
+}
+
+.install-banner span {
+    display: block;
+    font-size: 12px;
+    color: #cbd5e1;
+}
+
+.install-banner button {
+    background: #16a34a;
+    color: white;
+    font-weight: 700;
+    padding: 10px 14px;
+}
+
+.sync-badge {
+    position: fixed;
+    right: 14px;
+    top: 82px;
+    z-index: 998;
+    background: rgba(20, 83, 45, .92);
+    color: #bbf7d0;
+    border: 1px solid rgba(134,239,172,.2);
+    padding: 8px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+    box-shadow: 0 8px 20px rgba(0,0,0,.30);
+    backdrop-filter: blur(12px);
+}
+
+.fab-app {
+    position: fixed;
+    right: 22px;
+    bottom: 94px;
+    width: 64px;
+    height: 64px;
+    border-radius: 999px !important;
+    border: none;
+    background: linear-gradient(135deg, #22c55e, #14532d);
+    color: #fff;
+    font-size: 23px;
+    z-index: 999;
+    box-shadow: 0 14px 30px rgba(0,0,0,.44);
+}
+
+.bottom-nav-app {
+    position: fixed;
+    left: 50%;
+    bottom: 13px;
+    transform: translateX(-50%);
+    width: min(94vw, 520px);
+    z-index: 998;
+    display: flex;
+    gap: 6px;
+    padding: 9px;
+    border-radius: 28px;
+    background: rgba(15, 23, 42, .92);
+    border: 1px solid rgba(255,255,255,.08);
+    box-shadow: 0 15px 40px rgba(0,0,0,.42);
+    backdrop-filter: blur(18px);
+}
+
+.bottom-nav-app button {
+    flex: 1;
+    border: 0;
+    background: transparent;
+    color: #94a3b8;
+    padding: 9px 6px;
+    border-radius: 18px !important;
+    font-size: 12px;
+    font-weight: 800;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+}
+
+.bottom-nav-app button i {
+    font-size: 17px;
+}
+
+.bottom-nav-app button.active,
+.bottom-nav-app button:hover {
+    background: #16a34a;
+    color: #fff;
+}
+
+@media (max-width: 420px) {
+    #acoesHeader { gap: 4px; }
+    #acoesHeader button { padding-left: 9px; padding-right: 9px; }
+    .sync-badge { display: none; }
+    .fab-app { width: 58px; height: 58px; bottom: 90px; }
+}
