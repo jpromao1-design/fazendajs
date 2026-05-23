@@ -1,22 +1,61 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <meta name="theme-color" content="#14532d" />
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+
+    <meta name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent" />
 
     <title>FazendaJS</title>
 
+    <meta name="description"
+        content="FazendaJS - Gestão de Matrizes Bovinas" />
+
     <!-- PWA -->
     <link rel="manifest" href="./manifest.json" />
-    <meta name="theme-color" content="#16a34a" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
 
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
 
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <!-- jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        jsgreen: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            700: '#15803d',
+                            900: '#14532d'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
     <!-- CSS -->
-    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link rel="stylesheet" href="./assets/css/style.css">
 </head>
 
 <body class="bg-gray-100 text-gray-900 font-sans min-h-screen transition-colors">
@@ -27,197 +66,358 @@
     <!-- DATALIST -->
     <datalist id="opcoesLotes"></datalist>
 
+    <!-- BANNER INSTALAÇÃO -->
+    <div id="installBanner" class="install-banner escondido">
+
+        <div>
+            <strong>Instalar FazendaJS</strong>
+            <span>Adicionar o sistema à tela inicial.</span>
+        </div>
+
+        <button id="btnInstalarApp" type="button">
+            Instalar
+        </button>
+
+    </div>
+
+    <!-- STATUS -->
+    <div id="syncBadge" class="sync-badge">
+
+        <i class="fa-solid fa-database"></i>
+
+        LocalStorage ativo
+
+    </div>
+
     <!-- HEADER -->
-    <header class="app-header bg-jsgreen-900 text-white p-4 shadow-md sticky top-0 z-10 flex justify-between items-center">
+    <header
+        class="app-header bg-jsgreen-900 text-white p-4 shadow-md sticky top-0 z-10 flex justify-between items-center">
 
-        <div class="flex items-center gap-3">
-            <div class="text-3xl">🐄</div>
+        <div class="flex items-center min-w-0">
 
-            <div>
-                <h1 class="text-3xl font-black leading-none">
-                    Fazenda JS
-                </h1>
+            <button id="btnVoltar"
+                onclick="mostrarTela('lista')"
+                class="escondido mr-3 text-white hover:text-gray-300">
 
-                <span class="text-sm opacity-80">
+                <i class="fa-solid fa-arrow-left fa-xl"></i>
+
+            </button>
+
+            <h1 id="tituloHeader"
+                class="text-xl font-bold truncate">
+
+                <i class="fa-solid fa-cow mr-2"></i>
+
+                Fazenda JS
+
+                <span class="text-xs font-normal text-gray-300 ml-1">
                     v11
                 </span>
-            </div>
+
+            </h1>
+
         </div>
 
-        <div class="flex items-center gap-3">
+        <div id="acoesHeader"
+            class="flex gap-2 shrink-0">
 
-            <button id="btnTema"
-                class="btn-circle"
-                onclick="alternarTema()">
-                🌙
+            <!-- IMPORTAÇÃO -->
+            <input type="file"
+                id="inputImportar"
+                class="escondido"
+                accept=".json,application/json"
+                onchange="importarDados(event)">
+
+            <!-- TEMA -->
+            <button onclick="alternarTema()"
+                class="bg-jsgreen-700 hover:bg-jsgreen-500 text-white px-3 py-2 rounded font-bold shadow text-sm transition">
+
+                <i id="iconeTema"
+                    class="fa-solid fa-moon"></i>
+
             </button>
 
-            <button class="btn-circle"
-                onclick="exportarBackup()">
-                ⬇️
+            <!-- IMPORTAR -->
+            <button onclick="document.getElementById('inputImportar').click()"
+                class="bg-jsgreen-700 hover:bg-jsgreen-500 text-white px-3 py-2 rounded font-bold shadow text-sm transition">
+
+                <i class="fa-solid fa-upload"></i>
+
             </button>
 
-            <button class="btn-circle"
-                onclick="importarBackup()">
-                ⬆️
+            <!-- BACKUP -->
+            <button onclick="exportarBackup()"
+                class="bg-jsgreen-700 hover:bg-jsgreen-500 text-white px-3 py-2 rounded font-bold shadow text-sm transition">
+
+                <i class="fa-solid fa-download"></i>
+
             </button>
 
-            <button class="btn-pdf"
-                onclick="gerarPDFPlantel()">
+            <!-- PDF -->
+            <button onclick="gerarPDFGeral()"
+                class="bg-white text-jsgreen-900 px-3 py-2 rounded font-bold shadow text-sm">
+
+                <i class="fa-solid fa-file-pdf"></i>
+
                 PDF
+
             </button>
 
         </div>
+
     </header>
 
     <!-- MAIN -->
     <main class="max-w-xl mx-auto p-4 mt-2">
 
-        <!-- STATUS -->
-        <div class="flex justify-end mb-4">
-            <div class="status-badge">
-                💾 LocalStorage ativo
-            </div>
-        </div>
+        <!-- ========================= -->
+        <!-- TELA LISTA -->
+        <!-- ========================= -->
+        <div id="tela-lista">
 
-        <!-- CARD BUSCA -->
-        <section class="card-app">
+            <!-- CARD BUSCA -->
+            <div
+                class="card-base bg-white p-4 rounded-xl shadow-md mb-4 border-2 border-jsgreen-500">
 
-            <h2 class="titulo-card">
-                Buscar ou Cadastrar Matriz
-            </h2>
+                <label
+                    class="block text-gray-700 dark:text-gray-200 font-bold mb-2 text-center text-lg">
 
-            <input
-                id="buscaBrinco"
-                type="text"
-                placeholder="DIGITE O NÚMERO OU NOME..."
-                class="input-app"
-                oninput="onBuscaInput()"
-            />
+                    Buscar ou Cadastrar Matriz
 
-            <button
-                class="btn-primary"
-                onclick="cadastrarMatrizRapido()">
-                + Cadastrar Matriz
-            </button>
+                </label>
 
-        </section>
+                <!-- INPUT -->
+                <input type="text"
+                    id="buscaBrinco"
+                    oninput="onBuscaInput()"
+                    class="input-gigante w-full rounded-lg border-gray-300 border focus:border-jsgreen-700 focus:ring-0 bg-gray-50"
+                    placeholder="Digite o número ou nome..."
+                    autocapitalize="characters"
+                    maxlength="30"
+                    autocomplete="off">
 
-        <!-- FILTROS -->
-        <section class="card-app mt-5">
+                <!-- LOTE -->
+                <div id="painelLote"
+                    class="escondido mt-3 border-t pt-3">
 
-            <h3 class="text-xl font-bold mb-3">
-                Filtrar por lote
-            </h3>
+                    <label
+                        class="block text-gray-600 dark:text-gray-300 font-bold mb-1 text-sm">
 
-            <div class="flex gap-3">
+                        Lote Inicial
 
-                <select
-                    id="filtroLote"
-                    class="input-app flex-1"
-                    onchange="filtrarMatrizes()">
+                    </label>
 
-                    <option value="">
-                        Todos os lotes
-                    </option>
+                    <input type="text"
+                        id="novoLote"
+                        list="opcoesLotes"
+                        class="w-full text-base p-3 rounded-lg border border-gray-300 bg-gray-50"
+                        placeholder="Ex: Lote A"
+                        maxlength="40">
 
-                </select>
+                </div>
 
-                <button
-                    class="btn-secondary"
-                    onclick="limparFiltros()">
-                    Limpar
+                <!-- BOTÃO -->
+                <button id="btnCadastrarNovo"
+                    onclick="cadastrarMatrizRapido()"
+                    class="w-full bg-jsgreen-700 text-white font-bold py-3 px-4 rounded-lg mt-3 hover:bg-jsgreen-900 text-lg shadow-lg transition">
+
+                    <i class="fa-solid fa-plus mr-2"></i>
+
+                    Cadastrar Matriz
+
                 </button>
 
             </div>
 
-        </section>
+            <!-- FILTRO -->
+            <div
+                class="card-base bg-white rounded-xl shadow-sm border p-3 mb-4">
 
-        <!-- RESUMO -->
-        <section class="grid grid-cols-3 gap-4 mt-6">
+                <label
+                    class="block text-gray-700 dark:text-gray-200 font-bold mb-1 text-sm">
 
-            <div class="card-resumo">
-                <div
-                    id="totalMatrizes"
-                    class="numero-branco">
-                    0
+                    Filtrar por lote
+
+                </label>
+
+                <div class="flex gap-2">
+
+                    <select id="filtroLote"
+                        onchange="filtrarMatrizes()"
+                        class="flex-1 text-base p-3 rounded-lg border border-gray-300 bg-gray-50">
+
+                        <option value="">
+                            Todos os lotes
+                        </option>
+
+                    </select>
+
+                    <button onclick="limparFiltros()"
+                        class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 px-3 rounded-lg font-bold">
+
+                        Limpar
+
+                    </button>
+
                 </div>
 
-                <div class="label-resumo">
-                    TOTAL
-                </div>
             </div>
 
-            <div class="card-resumo">
-                <div
-                    id="totalPrenhas"
-                    class="numero-verde">
-                    0
+            <!-- RESUMO -->
+            <div id="resumoPlantel"
+                class="grid grid-cols-3 gap-2 mb-4">
+
+                <div class="card-base bg-white rounded-xl shadow-sm border p-4 text-center">
+
+                    <div id="totalMatrizes"
+                        class="text-3xl font-black text-gray-900">
+                        0
+                    </div>
+
+                    <div class="text-sm text-gray-500 font-bold">
+                        TOTAL
+                    </div>
+
                 </div>
 
-                <div class="label-resumo">
-                    PRENHAS
+                <div class="card-base bg-white rounded-xl shadow-sm border p-4 text-center">
+
+                    <div id="totalPrenhas"
+                        class="text-3xl font-black text-green-600">
+                        0
+                    </div>
+
+                    <div class="text-sm text-gray-500 font-bold">
+                        PRENHAS
+                    </div>
+
                 </div>
+
+                <div class="card-base bg-white rounded-xl shadow-sm border p-4 text-center">
+
+                    <div id="totalVazias"
+                        class="text-3xl font-black text-red-500">
+                        0
+                    </div>
+
+                    <div class="text-sm text-gray-500 font-bold">
+                        VAZIAS
+                    </div>
+
+                </div>
+
             </div>
 
-            <div class="card-resumo">
-                <div
-                    id="totalVazias"
-                    class="numero-vermelho">
-                    0
+            <!-- LISTA -->
+            <ul id="listaContatos"
+                class="space-y-2 pb-28">
+
+            </ul>
+
+        </div>
+
+        <!-- ========================= -->
+        <!-- PERFIL -->
+        <!-- ========================= -->
+        <div id="tela-perfil"
+            class="escondido space-y-4 pb-28">
+
+            <input type="hidden"
+                id="perfilBrincoAtual">
+
+            <div
+                class="card-base bg-white rounded-xl shadow-md p-6 text-center border-t-8 border-jsgreen-700">
+
+                <p
+                    class="text-gray-500 font-semibold uppercase tracking-widest text-sm">
+
+                    MATRIZ
+
+                </p>
+
+                <h2 id="perfilNome"
+                    class="text-4xl sm:text-5xl font-black text-gray-900 my-2 break-words">
+
+                    --
+
+                </h2>
+
+                <div id="perfilUltimoStatus"
+                    class="inline-block px-4 py-1 rounded-full text-sm font-bold bg-gray-200 mt-1">
+
+                    -
+
                 </div>
 
-                <div class="label-resumo">
-                    VAZIAS
+                <div class="mt-2">
+
+                    <span id="perfilLoteBadge"
+                        class="escondido inline-block px-3 py-1 rounded-full text-xs font-bold bg-orange-100 text-orange-700 mt-1">
+
+                    </span>
+
                 </div>
+
             </div>
 
-        </section>
+            <!-- HISTÓRICO -->
+            <div
+                class="card-base bg-white rounded-xl shadow-md p-5 border border-gray-200">
 
-        <!-- RESUMO PLANTEL -->
-        <div id="resumoPlantel"></div>
+                <h3
+                    class="text-lg font-bold text-gray-800 mb-3">
 
-        <!-- LISTA -->
-        <ul
-            id="listaContatos"
-            class="mt-6 space-y-4">
-        </ul>
+                    Histórico Completo
+
+                </h3>
+
+                <div id="perfilHistorico"
+                    class="text-sm text-gray-600 space-y-2">
+
+                </div>
+
+            </div>
+
+        </div>
 
     </main>
 
-    <!-- MENU MOBILE -->
+    <!-- MENU -->
     <nav class="bottom-nav">
 
         <button class="nav-btn ativo">
-            🏠
+
+            <i class="fa-solid fa-house"></i>
+
             <span>Início</span>
+
         </button>
 
         <button class="nav-btn">
-            📊
+
+            <i class="fa-solid fa-chart-column"></i>
+
             <span>Relatórios</span>
+
         </button>
 
         <button class="nav-btn">
-            ☁️
+
+            <i class="fa-solid fa-cloud"></i>
+
             <span>Sync</span>
+
         </button>
 
         <button class="nav-btn">
-            ⚙️
+
+            <i class="fa-solid fa-gear"></i>
+
             <span>Config</span>
+
         </button>
 
     </nav>
-
-    <!-- BOTÃO FLUTUANTE -->
-    <button
-        class="fab"
-        onclick="cadastrarMatrizRapido()">
-
-        +
-
-    </button>
 
     <!-- SERVICE WORKER -->
     <script>
@@ -226,7 +426,7 @@
         }
     </script>
 
-    <!-- APP -->
+    <!-- APP JS -->
     <script src="./assets/js/app.js"></script>
 
 </body>
