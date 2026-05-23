@@ -1,79 +1,28 @@
 /* =========================================================
-   FazendaJS - style.css
-   Visual estilo aplicativo preservando os IDs/classes do sistema original.
+   FAZENDA JS - STYLE.CSS
+   Layout moderno estilo app / GitHub Pages / PWA
 ========================================================= */
 
-.input-gigante {
-            font-size: 1.25rem;
-            padding: 1rem;
-            text-align: center;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        .escondido {
-            display: none !important;
-        }
-
-        #toast {
-            position: fixed;
-            bottom: 1.5rem;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.75rem;
-            font-weight: bold;
-            color: white;
-            z-index: 9999;
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
-            white-space: nowrap;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            max-width: 92vw;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        #toast.visivel {
-            opacity: 1;
-        }
-
-        .card-base {
-            background: white;
-        }
-
-        .dark .card-base {
-            background: #111827;
-            color: #f9fafb;
-            border-color: #374151;
-        }
-
-        .dark input,
-        .dark select,
-        .dark textarea {
-            background: #1f2937 !important;
-            color: #f9fafb !important;
-            border-color: #4b5563 !important;
-        }
-
-        .dark body {
-            background: #030712;
-            color: #f9fafb;
-        }
-
 :root {
-    --app-bg: #0f172a;
-    --app-card: rgba(17, 24, 39, .82);
-    --app-card-2: rgba(15, 23, 42, .92);
-    --app-border: rgba(255,255,255,.08);
-    --app-primary: #22c55e;
-    --app-primary-dark: #14532d;
-    --app-muted: #9ca3af;
-    --app-text: #f9fafb;
+    --bg-main: #0f172a;
+    --bg-card: rgba(255, 255, 255, 0.06);
+    --bg-card-hover: rgba(255, 255, 255, 0.10);
+    --border-soft: rgba(255, 255, 255, 0.10);
+    --text-main: #ffffff;
+    --text-muted: #94a3b8;
+    --green-main: #16a34a;
+    --green-light: #22c55e;
+    --green-dark: #14532d;
+    --red-main: #dc2626;
+    --yellow-main: #f59e0b;
 }
 
+/* =========================================================
+   BASE
+========================================================= */
+
 * {
+    box-sizing: border-box;
     -webkit-tap-highlight-color: transparent;
 }
 
@@ -82,219 +31,431 @@ html {
 }
 
 body {
-    background: radial-gradient(circle at top left, #1f5131 0%, #0f172a 34%, #020617 100%) !important;
-    color: var(--app-text) !important;
+    margin: 0;
     min-height: 100vh;
-    padding-bottom: 118px;
+    background:
+        radial-gradient(circle at top left, rgba(34, 197, 94, 0.22), transparent 34%),
+        radial-gradient(circle at top right, rgba(20, 83, 45, 0.35), transparent 32%),
+        linear-gradient(180deg, #020617 0%, #0f172a 45%, #020617 100%);
+    color: var(--text-main);
+    font-family: Arial, Helvetica, sans-serif;
+    padding-bottom: 96px;
     -webkit-font-smoothing: antialiased;
 }
 
-.app-header {
-    background: rgba(15, 23, 42, .82) !important;
-    backdrop-filter: blur(18px);
-    border-bottom: 1px solid var(--app-border);
+/* =========================================================
+   SCROLLBAR
+========================================================= */
+
+::-webkit-scrollbar {
+    width: 8px;
 }
 
-main {
-    max-width: 620px !important;
+::-webkit-scrollbar-track {
+    background: #020617;
 }
 
+::-webkit-scrollbar-thumb {
+    background: #14532d;
+    border-radius: 999px;
+}
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+#toast {
+    position: fixed;
+    left: 50%;
+    bottom: 96px;
+    transform: translateX(-50%);
+    min-width: 240px;
+    max-width: 92vw;
+    padding: 14px 18px;
+    border-radius: 18px;
+    background: var(--green-dark);
+    color: white;
+    font-weight: 800;
+    text-align: center;
+    z-index: 99999;
+    opacity: 0;
+    pointer-events: none;
+    box-shadow: 0 18px 35px rgba(0, 0, 0, 0.40);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+#toast.show,
+#toast.visivel {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-6px);
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+header {
+    background: rgba(2, 6, 23, 0.56) !important;
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+    border-bottom: 1px solid var(--border-soft);
+}
+
+header h1 {
+    letter-spacing: -0.04em;
+}
+
+header button {
+    border: 1px solid var(--border-soft);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.24);
+}
+
+header button:active {
+    transform: scale(0.96);
+}
+
+/* =========================================================
+   APP CARDS / GLASS
+========================================================= */
+
+.card,
+.glass-card,
+.card-app,
 .card-base,
-#tela-lista > div,
-#tela-perfil > div {
-    background: var(--app-card) !important;
-    color: var(--app-text) !important;
-    border: 1px solid var(--app-border) !important;
-    border-radius: 24px !important;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 14px 35px rgba(0,0,0,.35), inset 0 1px 1px rgba(255,255,255,.04) !important;
+section[class*="bg-white/5"],
+div[class*="bg-white/5"] {
+    background: var(--bg-card) !important;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid var(--border-soft) !important;
+    border-radius: 24px;
+    box-shadow:
+        0 18px 35px rgba(0, 0, 0, 0.30),
+        inset 0 1px 1px rgba(255, 255, 255, 0.05);
 }
 
-#tela-lista > div:first-child {
-    border: 1px solid rgba(34,197,94,.45) !important;
+.card:hover,
+.glass-card:hover,
+.card-app:hover,
+.card-base:hover {
+    background: var(--bg-card-hover) !important;
 }
 
-.card-base:hover,
-#listaContatos li:hover {
-    transform: translateY(-1px);
+/* =========================================================
+   INPUTS / SELECTS
+========================================================= */
+
+input,
+select,
+textarea {
+    color: white !important;
 }
 
-label, h1, h2, h3, p, span, div {
-    color: inherit;
+input::placeholder,
+textarea::placeholder {
+    color: rgba(226, 232, 240, 0.65) !important;
 }
 
-.text-gray-900, .text-gray-800, .text-gray-700 {
-    color: #f9fafb !important;
-}
-
-.text-gray-600, .text-gray-500, .text-gray-400, .text-gray-300 {
-    color: #cbd5e1 !important;
-}
-
-input, select, textarea, .input-gigante {
-    background: #0b1220 !important;
-    color: #ffffff !important;
-    border: 1px solid rgba(255,255,255,.10) !important;
+.input-app,
+.input-gigante,
+select,
+input[type="text"],
+input[type="number"],
+input[type="date"],
+textarea {
+    width: 100%;
+    background: rgba(2, 6, 23, 0.42) !important;
+    border: 1px solid rgba(255, 255, 255, 0.10) !important;
+    color: white !important;
     border-radius: 18px !important;
+    padding: 16px !important;
     outline: none !important;
+    transition: 0.2s ease;
 }
 
-input:focus, select:focus, textarea:focus, .input-gigante:focus {
-    border-color: var(--app-primary) !important;
-    box-shadow: 0 0 0 4px rgba(34,197,94,.16) !important;
+.input-gigante {
+    font-size: 1.25rem;
+    text-align: center;
+    font-weight: 900;
+    text-transform: uppercase;
 }
+
+.input-app:focus,
+.input-gigante:focus,
+select:focus,
+input:focus,
+textarea:focus {
+    border-color: var(--green-light) !important;
+    box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.14) !important;
+}
+
+select option {
+    background: #0f172a;
+    color: white;
+}
+
+/* =========================================================
+   BUTTONS
+========================================================= */
 
 button {
-    border-radius: 16px !important;
-    transition: transform .15s ease, opacity .15s ease, background .15s ease;
+    cursor: pointer;
+    transition: transform 0.18s ease, background 0.18s ease, opacity 0.18s ease;
 }
 
 button:active {
-    transform: scale(.98);
+    transform: scale(0.97);
 }
 
-.bg-jsgreen-700, .bg-jsgreen-900 {
-    background: linear-gradient(135deg, #22c55e, #14532d) !important;
-}
-
-#btnCadastrarNovo,
-button[onclick="salvarParto()"],
-button[onclick="salvarDiagnostico()"] {
-    background: linear-gradient(135deg, #22c55e, #14532d) !important;
-    box-shadow: 0 12px 25px rgba(0,0,0,.28);
-}
-
-#listaContatos li {
-    background: var(--app-card) !important;
-    border: 1px solid var(--app-border) !important;
-    border-radius: 22px !important;
-    box-shadow: 0 10px 26px rgba(0,0,0,.28);
-}
-
-#resumoPlantel > div {
-    min-height: 82px;
-}
-
-#perfilNome {
-    color: #ffffff !important;
-}
-
-#toast {
-    bottom: 118px;
-    background: #14532d;
+.btn-app-green,
+.btn-primary,
+button[id="btnCadastrar"],
+button[id="btnCadastrarNovo"] {
+    width: 100%;
+    border: none;
     border-radius: 18px;
-    box-shadow: 0 12px 28px rgba(0,0,0,.35);
-}
-
-.install-banner {
-    position: fixed;
-    top: 14px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 99999;
-    width: min(92vw, 460px);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    padding: 14px;
-    border-radius: 20px;
-    background: rgba(15, 23, 42, .94);
-    color: #fff;
-    border: 1px solid rgba(255,255,255,.10);
-    box-shadow: 0 15px 40px rgba(0,0,0,.45);
-    backdrop-filter: blur(18px);
-}
-
-.install-banner span {
-    display: block;
-    font-size: 12px;
-    color: #cbd5e1;
-}
-
-.install-banner button {
-    background: #16a34a;
+    padding: 16px 20px;
     color: white;
-    font-weight: 700;
-    padding: 10px 14px;
+    font-weight: 900;
+    font-size: 1.05rem;
+    background: linear-gradient(135deg, #22c55e, #14532d) !important;
+    box-shadow: 0 14px 28px rgba(20, 83, 45, 0.45);
 }
 
+.btn-app-gray,
+.btn-secondary {
+    border: 1px solid var(--border-soft);
+    border-radius: 18px;
+    padding: 14px 16px;
+    color: white;
+    font-weight: 800;
+    background: rgba(255, 255, 255, 0.09) !important;
+}
+
+.btn-app-gray:hover,
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.16) !important;
+}
+
+/* =========================================================
+   STATS
+========================================================= */
+
+#statTotal,
+#statPrenha,
+#statVazia,
+#totalMatrizes,
+#totalPrenhas,
+#totalVazias {
+    line-height: 1;
+    letter-spacing: -0.05em;
+}
+
+/* =========================================================
+   LIST ITEMS
+========================================================= */
+
+#listaMatrizes > li,
+#listaContatos > li {
+    background: var(--bg-card) !important;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid var(--border-soft) !important;
+    border-radius: 24px;
+    padding: 18px;
+    box-shadow:
+        0 18px 35px rgba(0, 0, 0, 0.28),
+        inset 0 1px 1px rgba(255, 255, 255, 0.04);
+}
+
+.avatar-app {
+    width: 56px;
+    height: 56px;
+    min-width: 56px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #22c55e, #14532d);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    box-shadow: 0 12px 24px rgba(20, 83, 45, 0.42);
+}
+
+/* =========================================================
+   BADGES
+========================================================= */
+
+.status-badge,
 .sync-badge {
     position: fixed;
     right: 14px;
     top: 82px;
-    z-index: 998;
-    background: rgba(20, 83, 45, .92);
+    z-index: 50;
+    background: rgba(20, 83, 45, 0.84);
     color: #bbf7d0;
-    border: 1px solid rgba(134,239,172,.2);
-    padding: 8px 12px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 800;
-    box-shadow: 0 8px 20px rgba(0,0,0,.30);
+    border: 1px solid rgba(187, 247, 208, 0.20);
     backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 999px;
+    padding: 8px 13px;
+    font-size: 0.78rem;
+    font-weight: 800;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.30);
 }
 
-.fab-app {
-    position: fixed;
-    right: 22px;
-    bottom: 94px;
-    width: 64px;
-    height: 64px;
-    border-radius: 999px !important;
-    border: none;
-    background: linear-gradient(135deg, #22c55e, #14532d);
-    color: #fff;
-    font-size: 23px;
-    z-index: 999;
-    box-shadow: 0 14px 30px rgba(0,0,0,.44);
-}
+/* =========================================================
+   INSTALL BANNER
+========================================================= */
 
-.bottom-nav-app {
+.install-banner {
     position: fixed;
     left: 50%;
-    bottom: 13px;
+    top: 14px;
     transform: translateX(-50%);
-    width: min(94vw, 520px);
-    z-index: 998;
+    width: min(92vw, 460px);
+    z-index: 9999;
+    background: rgba(2, 6, 23, 0.88);
+    border: 1px solid var(--border-soft);
+    border-radius: 22px;
+    padding: 14px;
     display: flex;
-    gap: 6px;
-    padding: 9px;
-    border-radius: 28px;
-    background: rgba(15, 23, 42, .92);
-    border: 1px solid rgba(255,255,255,.08);
-    box-shadow: 0 15px 40px rgba(0,0,0,.42);
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
     backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: 0 18px 35px rgba(0, 0, 0, 0.36);
 }
 
-.bottom-nav-app button {
-    flex: 1;
-    border: 0;
-    background: transparent;
+.install-banner strong {
+    display: block;
+    color: white;
+    font-size: 0.95rem;
+}
+
+.install-banner span {
+    display: block;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+}
+
+.install-banner button {
+    background: var(--green-main);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 10px 14px;
+    font-weight: 900;
+}
+
+/* =========================================================
+   BOTTOM NAV
+========================================================= */
+
+nav.fixed,
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 999;
+    background: rgba(2, 6, 23, 0.72) !important;
+    border-top: 1px solid var(--border-soft);
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+}
+
+.nav-btn {
     color: #94a3b8;
-    padding: 9px 6px;
-    border-radius: 18px !important;
-    font-size: 12px;
-    font-weight: 800;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 3px;
+    gap: 4px;
+    font-size: 0.78rem;
+    font-weight: 800;
 }
 
-.bottom-nav-app button i {
-    font-size: 17px;
+.nav-btn.ativo,
+.nav-btn.active {
+    color: #22c55e;
 }
 
-.bottom-nav-app button.active,
-.bottom-nav-app button:hover {
-    background: #16a34a;
-    color: #fff;
+/* =========================================================
+   HIDDEN HELPERS
+========================================================= */
+
+.escondido,
+.hidden {
+    display: none !important;
 }
 
-@media (max-width: 420px) {
-    #acoesHeader { gap: 4px; }
-    #acoesHeader button { padding-left: 9px; padding-right: 9px; }
-    .sync-badge { display: none; }
-    .fab-app { width: 58px; height: 58px; bottom: 90px; }
+/* =========================================================
+   DARK CLASS COMPATIBILITY
+========================================================= */
+
+.dark body {
+    background:
+        radial-gradient(circle at top left, rgba(34, 197, 94, 0.22), transparent 34%),
+        radial-gradient(circle at top right, rgba(20, 83, 45, 0.35), transparent 32%),
+        linear-gradient(180deg, #020617 0%, #0f172a 45%, #020617 100%);
+    color: white;
+}
+
+.dark .card-base,
+.dark .card,
+.dark .glass-card,
+.dark .card-app {
+    background: var(--bg-card) !important;
+    color: white !important;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 640px) {
+    body {
+        padding-bottom: 92px;
+    }
+
+    header .max-w-6xl {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    header h1 {
+        font-size: 1.45rem !important;
+    }
+
+    header .w-14 {
+        width: 46px;
+        height: 46px;
+    }
+
+    main {
+        padding-left: 14px !important;
+        padding-right: 14px !important;
+    }
+
+    section {
+        border-radius: 22px !important;
+        padding: 18px !important;
+    }
+
+    input,
+    select,
+    textarea {
+        font-size: 16px !important;
+    }
+
+    .sync-badge {
+        top: 76px;
+        right: 10px;
+        font-size: 0.70rem;
+    }
+
+    #toast {
+        bottom: 84px;
+    }
 }
