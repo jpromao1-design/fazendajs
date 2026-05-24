@@ -1,764 +1,735 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
 
-    <meta charset="UTF-8">
+<meta charset="UTF-8" />
 
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <meta name="apple-mobile-web-app-capable" content="yes">
+<title>Fazenda JS v11</title>
 
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#15803d" />
 
-    <meta name="theme-color" content="#14532d">
+<link rel="manifest" href="manifest.json" />
 
-    <title>Fazenda JS - Gestão Fácil v11</title>
+<link
+rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+/>
 
-    <!-- TAILWIND -->
-    <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- SUPABASE -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
 
-    <!-- ICONES -->
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+body{
 
-    <script>
+background:
+radial-gradient(circle at left, rgba(34,197,94,.15), transparent 25%),
+linear-gradient(to right,#010617,#04113b);
 
-        tailwind.config = {
+font-family:Arial, Helvetica, sans-serif;
+color:white;
+min-height:100vh;
+padding-bottom:120px;
 
-            darkMode: 'class',
+}
 
-            theme: {
+header{
 
-                extend: {
+background:linear-gradient(to right,#166534,#15803d);
 
-                    colors: {
+padding:16px 20px;
 
-                        jsgreen: {
+display:flex;
+justify-content:space-between;
+align-items:center;
 
-                            50: '#f0fdf4',
-                            100: '#dcfce7',
-                            500: '#22c55e',
-                            700: '#15803d',
-                            900: '#14532d'
-                        }
-                    }
-                }
-            }
-        }
+box-shadow:0 2px 10px rgba(0,0,0,.4);
 
-    </script>
+}
 
-    <style>
+.logo{
 
-        body {
+display:flex;
+align-items:center;
+gap:14px;
 
-            background:
-                linear-gradient(
-                    180deg,
-                    #020617 0%,
-                    #0f172a 100%
-                );
+}
 
-            color: white;
+.logo h1{
 
-            min-height: 100vh;
-        }
+font-size:24px;
+font-weight:800;
 
-        .card-base {
+}
 
-            background:
-                rgba(15, 23, 42, 0.75);
+.logo span{
 
-            border:
-                1px solid rgba(255,255,255,0.06);
+font-size:14px;
+opacity:.8;
 
-            backdrop-filter:
-                blur(14px);
+}
 
-            border-radius: 24px;
-        }
+.top-actions{
 
-        .input-gigante {
+display:flex;
+gap:12px;
 
-            font-size: 1.15rem;
+}
 
-            padding: 1rem;
+.top-btn{
 
-            text-align: center;
+width:48px;
+height:48px;
 
-            font-weight: bold;
+border:none;
+border-radius:14px;
 
-            text-transform: uppercase;
+background:rgba(255,255,255,.12);
 
-            background:
-                rgba(255,255,255,0.04);
+color:white;
 
-            border:
-                1px solid rgba(255,255,255,0.08);
+font-size:20px;
 
-            color: white;
-        }
+cursor:pointer;
 
-        .input-gigante::placeholder {
+transition:.2s;
 
-            color:
-                rgba(255,255,255,0.45);
-        }
+}
 
-        .escondido {
+.top-btn:hover{
 
-            display: none !important;
-        }
+transform:scale(1.05);
 
-        #toast {
+background:rgba(255,255,255,.2);
 
-            position: fixed;
+}
 
-            bottom: 1.5rem;
+.pdf-btn{
 
-            left: 50%;
+background:white;
+color:#166534;
+font-weight:bold;
+padding:0 22px;
+width:auto;
 
-            transform: translateX(-50%);
+}
 
-            padding: 0.9rem 1.5rem;
+.container{
 
-            border-radius: 16px;
+max-width:720px;
+margin:28px auto;
+padding:0 16px;
 
-            font-weight: bold;
+}
 
-            color: white;
+.card{
 
-            z-index: 9999;
+background:rgba(255,255,255,.05);
 
-            opacity: 0;
+border:1px solid rgba(255,255,255,.08);
 
-            transition: opacity 0.3s;
+backdrop-filter:blur(10px);
 
-            pointer-events: none;
+border-radius:28px;
 
-            white-space: nowrap;
+padding:18px;
 
-            box-shadow:
-                0 8px 30px rgba(0,0,0,0.35);
+margin-bottom:24px;
 
-            max-width: 92vw;
+box-shadow:0 8px 30px rgba(0,0,0,.3);
 
-            overflow: hidden;
+}
 
-            text-overflow: ellipsis;
-        }
+.card-title{
 
-        #toast.visivel {
+text-align:center;
 
-            opacity: 1;
-        }
+font-size:18px;
+font-weight:700;
 
-        .glass-btn {
+margin-bottom:18px;
 
-            background:
-                rgba(255,255,255,0.08);
+}
 
-            border:
-                1px solid rgba(255,255,255,0.08);
+.input{
 
-            backdrop-filter:
-                blur(10px);
+width:100%;
 
-            transition: 0.25s;
-        }
+height:72px;
 
-        .glass-btn:hover {
+border:none;
+outline:none;
 
-            transform:
-                translateY(-2px);
+background:rgba(255,255,255,.05);
 
-            background:
-                rgba(255,255,255,0.14);
-        }
+border-radius:22px;
 
-        .header-gradient {
+padding:0 22px;
 
-            background:
-                linear-gradient(
-                    90deg,
-                    rgba(20,83,45,0.92),
-                    rgba(21,128,61,0.92)
-                );
+font-size:20px;
+font-weight:700;
 
-            backdrop-filter:
-                blur(10px);
-        }
+color:white;
 
-        .menu-bottom {
+margin-bottom:18px;
 
-            position: fixed;
+border:1px solid rgba(255,255,255,.08);
 
-            bottom: 0;
+}
 
-            left: 0;
+.input::placeholder{
 
-            width: 100%;
+color:rgba(255,255,255,.5);
 
-            background:
-                rgba(15,23,42,0.92);
+}
 
-            backdrop-filter:
-                blur(18px);
+.btn-main{
 
-            border-top:
-                1px solid rgba(255,255,255,0.08);
+width:100%;
 
-            display: flex;
+height:74px;
 
-            justify-content: space-around;
+border:none;
+border-radius:24px;
 
-            padding: 0.75rem 0;
+background:linear-gradient(to right,#16a34a,#22c55e);
 
-            z-index: 999;
-        }
+color:white;
 
-        .menu-item {
+font-size:18px;
+font-weight:800;
 
-            display: flex;
+cursor:pointer;
 
-            flex-direction: column;
+transition:.2s;
 
-            align-items: center;
+}
 
-            font-size: 0.72rem;
+.btn-main:hover{
 
-            color:
-                rgba(255,255,255,0.65);
-        }
+transform:scale(1.01);
 
-        .menu-item i {
+}
 
-            font-size: 1.15rem;
+.filtro-area{
 
-            margin-bottom: 0.25rem;
-        }
+display:flex;
+gap:12px;
 
-        .menu-item.active {
+}
 
-            color: #22c55e;
-        }
+.select{
 
-        .card-hover {
+flex:1;
 
-            transition: 0.25s;
-        }
+height:60px;
 
-        .card-hover:hover {
+background:rgba(255,255,255,.05);
 
-            transform:
-                translateY(-2px);
+border:none;
+outline:none;
 
-            border-color:
-                rgba(34,197,94,0.45);
-        }
+border-radius:20px;
 
-        .status-pill {
+padding:0 18px;
 
-            padding:
-                0.35rem 0.75rem;
+color:white;
 
-            border-radius:
-                999px;
+font-size:16px;
 
-            font-size:
-                0.72rem;
+border:1px solid rgba(255,255,255,.08);
 
-            font-weight:
-                bold;
+}
 
-            text-transform:
-                uppercase;
-        }
+.btn-limpar{
 
-        .status-prenha {
+width:120px;
 
-            background:
-                rgba(34,197,94,0.18);
+border:none;
+border-radius:20px;
 
-            color:
-                #4ade80;
-        }
+background:#374151;
 
-        .status-vazia {
+color:white;
 
-            background:
-                rgba(239,68,68,0.18);
+font-size:18px;
+font-weight:700;
 
-            color:
-                #f87171;
-        }
+cursor:pointer;
 
-        .status-neutro {
+}
 
-            background:
-                rgba(255,255,255,0.08);
+.stats{
 
-            color:
-                rgba(255,255,255,0.7);
-        }
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:18px;
 
-        .dark input,
-        .dark select,
-        .dark textarea {
+margin-bottom:26px;
 
-            background:
-                rgba(255,255,255,0.04) !important;
+}
 
-            color:
-                white !important;
+.stat{
 
-            border-color:
-                rgba(255,255,255,0.08) !important;
-        }
+background:rgba(255,255,255,.05);
 
-        .modal-overlay {
+border-radius:28px;
 
-            position: fixed;
+padding:28px 10px;
 
-            inset: 0;
+text-align:center;
 
-            background:
-                rgba(0,0,0,0.6);
+border:1px solid rgba(255,255,255,.08);
 
-            display: flex;
+}
 
-            justify-content: center;
+.stat-num{
 
-            align-items: center;
+font-size:54px;
+font-weight:900;
 
-            z-index: 99999;
+}
 
-            padding: 1rem;
-        }
+.stat-label{
 
-        .modal-box {
+margin-top:8px;
+font-size:16px;
+opacity:.7;
 
-            width: 100%;
+font-weight:700;
 
-            max-width: 430px;
+}
 
-            background:
-                rgba(15,23,42,0.95);
+.branco{
 
-            border:
-                1px solid rgba(255,255,255,0.08);
+color:white;
 
-            backdrop-filter:
-                blur(18px);
+}
 
-            border-radius: 28px;
+.verde{
 
-            padding: 1.5rem;
-        }
+color:#4ade80;
 
-        .modal-input {
+}
 
-            width: 100%;
+.vermelho{
 
-            padding: 1rem;
+color:#f87171;
 
-            border-radius: 18px;
+}
 
-            margin-bottom: 1rem;
+.lista{
 
-            background:
-                rgba(255,255,255,0.04);
+display:flex;
+flex-direction:column;
+gap:18px;
 
-            border:
-                1px solid rgba(255,255,255,0.08);
+}
 
-            color: white;
-        }
+.matriz{
 
-        .btn-primary {
+background:rgba(255,255,255,.05);
 
-            width: 100%;
+border-radius:24px;
 
-            background:
-                linear-gradient(
-                    90deg,
-                    #15803d,
-                    #22c55e
-                );
+padding:18px;
 
-            padding: 1rem;
+border:1px solid rgba(255,255,255,.08);
 
-            border-radius: 18px;
+}
 
-            font-weight: bold;
-        }
+.topo-matriz{
 
-    </style>
+display:flex;
+justify-content:space-between;
+align-items:center;
+
+margin-bottom:16px;
+
+}
+
+.numero{
+
+font-size:30px;
+font-weight:900;
+
+}
+
+.status{
+
+padding:10px 18px;
+
+border-radius:999px;
+
+font-size:14px;
+font-weight:800;
+
+}
+
+.prenha{
+
+background:#14532d;
+color:#4ade80;
+
+}
+
+.vazia{
+
+background:#7f1d1d;
+color:#f87171;
+
+}
+
+.info{
+
+opacity:.8;
+margin-bottom:16px;
+
+}
+
+.botoes{
+
+display:flex;
+gap:10px;
+
+}
+
+.btn-status{
+
+flex:1;
+
+height:48px;
+
+border:none;
+border-radius:16px;
+
+cursor:pointer;
+
+font-weight:700;
+
+}
+
+.btn-prenha{
+
+background:#14532d;
+color:#4ade80;
+
+}
+
+.btn-vazia{
+
+background:#7f1d1d;
+color:#f87171;
+
+}
+
+.btn-excluir{
+
+background:#374151;
+color:white;
+
+}
+
+.bottom-nav{
+
+position:fixed;
+bottom:0;
+left:0;
+right:0;
+
+height:86px;
+
+background:rgba(0,0,0,.45);
+
+backdrop-filter:blur(14px);
+
+display:flex;
+justify-content:space-around;
+align-items:center;
+
+border-top:1px solid rgba(255,255,255,.08);
+
+}
+
+.nav-item{
+
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:6px;
+
+font-size:13px;
+
+opacity:.7;
+
+}
+
+.nav-item i{
+
+font-size:22px;
+
+}
+
+.active{
+
+color:#4ade80;
+opacity:1;
+
+}
+
+.nenhuma{
+
+text-align:center;
+padding:40px 0;
+opacity:.6;
+font-style:italic;
+
+}
+
+@media(max-width:700px){
+
+.stats{
+
+grid-template-columns:1fr;
+
+}
+
+.filtro-area{
+
+flex-direction:column;
+
+}
+
+.btn-limpar{
+
+width:100%;
+height:60px;
+
+}
+
+}
+
+</style>
 
 </head>
 
-<body class="font-sans transition-colors">
+<body>
 
-    <!-- TOAST -->
-    <div id="toast"></div>
+<header>
 
-    <!-- DATALIST -->
-    <datalist id="opcoesLotes"></datalist>
+<div class="logo">
 
-    <!-- HEADER -->
-    <header class="header-gradient p-4 shadow-lg sticky top-0 z-50 flex justify-between items-center">
+<div style="font-size:28px;">🐄</div>
 
-        <div class="flex items-center min-w-0">
+<div>
 
-            <button id="btnVoltar"
-                onclick="mostrarTela('lista')"
-                class="escondido mr-3 text-white">
+<h1>Fazenda JS <span>v11</span></h1>
 
-                <i class="fa-solid fa-arrow-left fa-xl"></i>
+<span>Gestão Inteligente</span>
 
-            </button>
+</div>
 
-            <h1 id="tituloHeader"
-                class="text-xl font-black truncate">
+</div>
 
-                🐄 Fazenda JS
+<div class="top-actions">
 
-                <span class="text-xs font-normal text-green-200 ml-1">
-                    v11
-                </span>
+<button class="top-btn">
+<i class="fa-solid fa-moon"></i>
+</button>
 
-            </h1>
+<button class="top-btn">
+<i class="fa-solid fa-cloud-arrow-up"></i>
+</button>
 
-        </div>
+<button class="top-btn">
+<i class="fa-solid fa-download"></i>
+</button>
 
-        <div id="acoesHeader"
-            class="flex gap-2 shrink-0">
+<button class="top-btn pdf-btn">
+PDF
+</button>
 
-            <input type="file"
-                id="inputImportar"
-                class="escondido"
-                accept=".json,application/json"
-                onchange="importarDados(event)">
+</div>
 
-            <button onclick="alternarTema()"
-                class="glass-btn px-3 py-2 rounded-xl">
+</header>
 
-                <i id="iconeTema"
-                    class="fa-solid fa-moon"></i>
+<div class="container">
 
-            </button>
+<div class="card">
 
-            <button onclick="document.getElementById('inputImportar').click()"
-                class="glass-btn px-3 py-2 rounded-xl">
+<div class="card-title">
+Buscar ou Cadastrar Matriz
+</div>
 
-                <i class="fa-solid fa-upload"></i>
+<input
+id="inputBusca"
+class="input"
+placeholder="DIGITE O NÚMERO OU NOME..."
+/>
 
-            </button>
+<input
+id="inputLote"
+class="input"
+placeholder="Lote (Opcional)"
+/>
 
-            <button onclick="exportarBackup()"
-                class="glass-btn px-3 py-2 rounded-xl">
+<button
+id="btnCadastrar"
+class="btn-main"
+>
 
-                <i class="fa-solid fa-download"></i>
+<i class="fa-solid fa-plus"></i>
 
-            </button>
+Cadastrar Matriz
 
-            <button onclick="gerarPDFGeral()"
-                class="bg-white text-jsgreen-900 px-3 py-2 rounded-xl font-bold shadow">
+</button>
 
-                PDF
+</div>
 
-            </button>
+<div class="card">
 
-        </div>
+<div class="filtro-area">
 
-    </header>
+<select
+id="filtroLote"
+class="select"
+>
 
-    <!-- MAIN -->
-    <main class="max-w-xl mx-auto p-4 mt-2 pb-28">
+<option value="">
+Todos os lotes
+</option>
 
-        <!-- TELA LISTA -->
-        <div id="tela-lista">
+</select>
 
-            <!-- BUSCA -->
-            <div class="card-base p-4 shadow-lg mb-4 border border-green-500/20">
+<button
+id="btnLimpar"
+class="btn-limpar"
+>
 
-                <label class="block text-gray-200 font-bold mb-2 text-center text-lg">
+Limpar
 
-                    Buscar ou Cadastrar Matriz
+</button>
 
-                </label>
+</div>
 
-                <input
-                    type="text"
-                    id="buscaBrinco"
-                    oninput="onBuscaInput()"
-                    class="input-gigante w-full rounded-2xl"
-                    placeholder="Digite o número ou nome..."
-                    autocapitalize="characters"
-                    maxlength="30"
-                    autocomplete="off">
+</div>
 
-                <div id="painelLote"
-                    class="escondido mt-3 border-t border-white/10 pt-3">
+<div class="stats">
 
-                    <label class="block text-gray-300 font-bold mb-1 text-sm">
+<div class="stat">
 
-                        Lote Inicial
+<div
+id="totalMatrizes"
+class="stat-num branco"
+>
 
-                    </label>
+0
 
-                    <input
-                        type="text"
-                        id="novoLote"
-                        list="opcoesLotes"
-                        class="w-full text-base p-3 rounded-2xl border border-white/10 bg-white/5"
-                        placeholder="Ex: Lote A">
+</div>
 
-                </div>
+<div class="stat-label">
+TOTAL
+</div>
 
-                <button id="btnCadastrarNovo"
-                    onclick="cadastrarMatrizRapido()"
-                    class="btn-primary mt-3">
+</div>
 
-                    ➕ Cadastrar Matriz
-                    <span id="numNovoBrinco"></span>
+<div class="stat">
 
-                </button>
+<div
+id="totalPrenhas"
+class="stat-num verde"
+>
 
-            </div>
+0
 
-            <!-- FILTRO -->
-            <div class="card-base rounded-3xl shadow p-3 mb-4">
+</div>
 
-                <label class="block text-gray-300 font-bold mb-2 text-sm">
+<div class="stat-label">
+PRENHAS
+</div>
 
-                    Filtrar por lote
+</div>
 
-                </label>
+<div class="stat">
 
-                <div class="flex gap-2">
+<div
+id="totalVazias"
+class="stat-num vermelho"
+>
 
-                    <select id="filtroLote"
-                        onchange="filtrarMatrizes()"
-                        class="flex-1 text-base p-3 rounded-2xl border border-white/10 bg-white/5">
+0
 
-                        <option value="">
-                            Todos os lotes
-                        </option>
+</div>
 
-                    </select>
+<div class="stat-label">
+VAZIAS
+</div>
 
-                    <button onclick="limparFiltros()"
-                        class="glass-btn px-4 rounded-2xl">
+</div>
 
-                        Limpar
+</div>
 
-                    </button>
+<div
+id="listaMatrizes"
+class="lista"
+>
 
-                </div>
+<div class="nenhuma">
 
-            </div>
+Nenhuma matriz cadastrada.
 
-            <!-- DASHBOARD -->
-            <div id="resumoPlantel"
-                class="grid grid-cols-3 gap-2 mb-4"></div>
+</div>
 
-            <!-- LISTA -->
-            <ul id="listaContatos"
-                class="space-y-2 pb-10"></ul>
+</div>
 
-        </div>
+</div>
 
-        <!-- PERFIL -->
-        <div id="tela-perfil"
-            class="escondido space-y-4 pb-10">
+<nav class="bottom-nav">
 
-            <input type="hidden"
-                id="perfilBrincoAtual">
+<div class="nav-item active">
 
-            <!-- CARD PERFIL -->
-            <div class="card-base rounded-3xl shadow-lg p-6 text-center border border-green-500/20">
+<i class="fa-solid fa-house"></i>
 
-                <p class="text-gray-400 font-semibold uppercase tracking-widest text-sm">
+<span>Início</span>
 
-                    Matriz
+</div>
 
-                </p>
+<div class="nav-item">
 
-                <h2 id="perfilNome"
-                    class="text-4xl sm:text-5xl font-black my-2 break-words">
+<i class="fa-solid fa-chart-column"></i>
 
-                    --
+<span>Relatórios</span>
 
-                </h2>
+</div>
 
-                <div id="perfilUltimoStatus"
-                    class="inline-block px-4 py-1 rounded-full text-sm font-bold bg-white/10 mt-1">
+<div class="nav-item">
 
-                    -
+<i class="fa-solid fa-cloud"></i>
 
-                </div>
+<span>Sync</span>
 
-                <div class="mt-2">
+</div>
 
-                    <span id="perfilLoteBadge"
-                        class="escondido inline-block px-3 py-1 rounded-full text-xs font-bold bg-orange-500/20 text-orange-300 mt-1"></span>
+<div class="nav-item">
 
-                </div>
+<i class="fa-solid fa-gear"></i>
 
-                <div class="mt-4 flex gap-2">
+<span>Config</span>
 
-                    <button onclick="enviarWhatsAppPerfil()"
-                        class="flex-1 border border-green-500/40 text-green-400 font-bold py-3 rounded-2xl">
+</div>
 
-                        WhatsApp
+</nav>
 
-                    </button>
-
-                    <button onclick="gerarPDFIndividual()"
-                        class="flex-1 border border-red-500/40 text-red-400 font-bold py-3 rounded-2xl">
-
-                        PDF
-
-                    </button>
-
-                </div>
-
-            </div>
-
-            <!-- LOTE -->
-            <div class="card-base rounded-3xl shadow-lg p-5">
-
-                <h3 class="text-lg font-bold mb-3">
-
-                    🏷️ Lote / Grupo
-
-                </h3>
-
-                <div class="flex gap-2">
-
-                    <input type="text"
-                        id="perfilLote"
-                        list="opcoesLotes"
-                        class="flex-1 text-lg p-3 rounded-2xl border border-white/10 bg-white/5">
-
-                    <button onclick="salvarLote()"
-                        class="glass-btn px-5 rounded-2xl">
-
-                        Salvar
-
-                    </button>
-
-                </div>
-
-            </div>
-
-            <!-- NASCIMENTO -->
-            <div class="card-base rounded-3xl shadow-lg p-5">
-
-                <h3 class="text-xl font-bold mb-4">
-
-                    🍼 Nascimento
-
-                </h3>
-
-                <div class="space-y-4">
-
-                    <input type="date"
-                        id="partoData"
-                        class="modal-input">
-
-                    <select id="partoSexo"
-                        class="modal-input">
-
-                        <option value="Macho">
-                            Macho
-                        </option>
-
-                        <option value="Fêmea">
-                            Fêmea
-                        </option>
-
-                    </select>
-
-                    <input type="text"
-                        id="partoObs"
-                        class="modal-input"
-                        placeholder="Observação">
-
-                    <button onclick="salvarParto()"
-                        class="btn-primary">
-
-                        SALVAR NASCIMENTO
-
-                    </button>
-
-                </div>
-
-            </div>
-
-            <!-- HISTÓRICO -->
-            <div class="card-base rounded-3xl shadow-lg p-5">
-
-                <h3 class="text-lg font-bold mb-3">
-
-                    📋 Histórico Completo
-
-                </h3>
-
-                <div id="perfilHistorico"
-                    class="text-sm text-gray-300 space-y-2"></div>
-
-                <button onclick="excluirMatriz()"
-                    class="mt-6 w-full text-red-400 font-bold py-3 rounded-2xl border border-red-500/20">
-
-                    Excluir Animal
-
-                </button>
-
-            </div>
-
-        </div>
-
-    </main>
-
-    <!-- MENU INFERIOR -->
-    <nav class="menu-bottom">
-
-        <div class="menu-item active">
-            <i class="fa-solid fa-house"></i>
-            <span>Início</span>
-        </div>
-
-        <div class="menu-item">
-            <i class="fa-solid fa-chart-simple"></i>
-            <span>Relatórios</span>
-        </div>
-
-        <div class="menu-item">
-            <i class="fa-solid fa-cloud"></i>
-            <span>Sync</span>
-        </div>
-
-        <div class="menu-item">
-            <i class="fa-solid fa-gear"></i>
-            <span>Config</span>
-        </div>
-
-    </nav>
-
-    <!-- APP JS -->
-    <script src="./assets/js/app.js"></script>
+<script src="./assets/js/app.js"></script>
 
 </body>
 </html>
