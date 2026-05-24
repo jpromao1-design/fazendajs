@@ -1,49 +1,64 @@
-// =====================================================
-// FAZENDA JS v11 - FINAL OPERACIONAL
-// =====================================================
+// ======================================================
+// FAZENDA JS v11 - APP FINAL OPERACIONAL
+// ======================================================
 
-// =====================================================
+// ======================================================
 // CONFIGURAÇÃO SUPABASE
-// =====================================================
+// ======================================================
 
-const SUPABASE_URL = 'https://rmdxjxlhzeevybriywzf.supabase.co';
+const SUPABASE_URL =
+'https://rmdxjxlhzeevybriywzf.supabase.co';
 
-const SUPABASE_ANON_KEY = 'sb_publishable_IU6_hF0V4xjTIZ5KlCLW9A_quYu8YA9';
+const SUPABASE_ANON_KEY =
+'sb_publishable_IU6_hF0V4xjTIZ5KlCLW9A_quYu8YA9';
 
 const supabaseClient = supabase.createClient(
     SUPABASE_URL,
     SUPABASE_ANON_KEY
 );
 
-// =====================================================
-// BANCO LOCAL
-// =====================================================
+// ======================================================
+// STORAGE
+// ======================================================
 
 const STORAGE_KEY = 'fazendaJS_v11';
 
 let matrizes = [];
 
-// =====================================================
-// ELEMENTOS
-// =====================================================
+// ======================================================
+// ELEMENTOS HTML
+// ======================================================
 
-const inputBusca = document.getElementById('inputBusca');
-const inputLote = document.getElementById('inputLote');
+const inputBusca =
+document.getElementById('inputBusca');
 
-const btnCadastrar = document.getElementById('btnCadastrar');
+const inputLote =
+document.getElementById('inputLote');
 
-const listaMatrizes = document.getElementById('listaMatrizes');
+const btnCadastrar =
+document.getElementById('btnCadastrar');
 
-const totalEl = document.getElementById('totalMatrizes');
-const prenhasEl = document.getElementById('totalPrenhas');
-const vaziasEl = document.getElementById('totalVazias');
+const listaMatrizes =
+document.getElementById('listaMatrizes');
 
-const filtroLote = document.getElementById('filtroLote');
-const btnLimpar = document.getElementById('btnLimpar');
+const totalMatrizes =
+document.getElementById('totalMatrizes');
 
-// =====================================================
-// INICIAR
-// =====================================================
+const totalPrenhas =
+document.getElementById('totalPrenhas');
+
+const totalVazias =
+document.getElementById('totalVazias');
+
+const filtroLote =
+document.getElementById('filtroLote');
+
+const btnLimpar =
+document.getElementById('btnLimpar');
+
+// ======================================================
+// INICIALIZAÇÃO
+// ======================================================
 
 document.addEventListener('DOMContentLoaded', async () => {
 
@@ -55,13 +70,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 });
 
-// =====================================================
+// ======================================================
 // CARREGAR LOCAL
-// =====================================================
+// ======================================================
 
 function carregarLocal() {
 
-    const dados = localStorage.getItem(STORAGE_KEY);
+    const dados =
+    localStorage.getItem(STORAGE_KEY);
 
     if (dados) {
 
@@ -71,9 +87,9 @@ function carregarLocal() {
 
 }
 
-// =====================================================
+// ======================================================
 // SALVAR LOCAL
-// =====================================================
+// ======================================================
 
 function salvarLocal() {
 
@@ -84,15 +100,16 @@ function salvarLocal() {
 
 }
 
-// =====================================================
+// ======================================================
 // CARREGAR SUPABASE
-// =====================================================
+// ======================================================
 
 async function carregarSupabase() {
 
     try {
 
-        const { data, error } = await supabaseClient
+        const { data, error } =
+        await supabaseClient
             .from('matrizes')
             .select('*')
             .order('id', { ascending: false });
@@ -100,11 +117,12 @@ async function carregarSupabase() {
         if (error) {
 
             console.error(error);
+
             return;
 
         }
 
-        if (data && data.length > 0) {
+        if (data) {
 
             matrizes = data;
 
@@ -122,17 +140,22 @@ async function carregarSupabase() {
 
 }
 
-// =====================================================
-// CADASTRAR
-// =====================================================
+// ======================================================
+// CADASTRAR MATRIZ
+// ======================================================
 
-btnCadastrar.addEventListener('click', cadastrarMatriz);
+btnCadastrar.addEventListener(
+    'click',
+    cadastrarMatriz
+);
 
 async function cadastrarMatriz() {
 
-    const numero = inputBusca.value.trim();
+    const numero =
+    inputBusca.value.trim();
 
-    const lote = inputLote.value.trim();
+    const lote =
+    inputLote.value.trim();
 
     if (!numero) {
 
@@ -144,15 +167,22 @@ async function cadastrarMatriz() {
 
     const nova = {
 
-        numero,
-        lote,
+        numero: numero,
+
+        lote: lote,
+
         status: 'Prenha',
+
         obs: '',
-        criado_em: new Date().toISOString()
+
+        criado_em:
+        new Date().toISOString()
 
     };
 
-    // salva local
+    // ==========================================
+    // SALVAR LOCAL
+    // ==========================================
 
     matrizes.unshift(nova);
 
@@ -160,16 +190,22 @@ async function cadastrarMatriz() {
 
     renderizar();
 
-    // limpa campos
+    // ==========================================
+    // LIMPAR CAMPOS
+    // ==========================================
 
     inputBusca.value = '';
+
     inputLote.value = '';
 
-    // salva supabase
+    // ==========================================
+    // SALVAR SUPABASE
+    // ==========================================
 
     try {
 
-        const { error } = await supabaseClient
+        const { error } =
+        await supabaseClient
             .from('matrizes')
             .insert([nova]);
 
@@ -187,77 +223,98 @@ async function cadastrarMatriz() {
 
 }
 
-// =====================================================
+// ======================================================
 // RENDERIZAR
-// =====================================================
+// ======================================================
 
 function renderizar() {
 
     listaMatrizes.innerHTML = '';
 
-    let filtradas = [...matrizes];
+    let lista = [...matrizes];
 
-    const loteSelecionado = filtroLote.value;
+    const loteSelecionado =
+    filtroLote.value;
 
     if (loteSelecionado) {
 
-        filtradas = filtradas.filter(
-            item => item.lote === loteSelecionado
+        lista = lista.filter(item =>
+            item.lote === loteSelecionado
         );
 
     }
 
-    if (filtradas.length === 0) {
+    if (lista.length === 0) {
 
         listaMatrizes.innerHTML = `
-            <div class="nenhuma-matriz">
+
+            <div class="nenhuma">
+
                 Nenhuma matriz cadastrada.
+
             </div>
+
         `;
 
     }
 
-    filtradas.forEach((matriz, index) => {
+    lista.forEach((matriz, index) => {
 
-        const card = document.createElement('div');
+        const card =
+        document.createElement('div');
 
-        card.className = 'card-matriz';
+        card.className = 'matriz';
 
         card.innerHTML = `
 
-            <div class="card-topo">
+            <div class="topo-matriz">
 
-                <div class="numero-matriz">
+                <div class="numero">
+
                     ${matriz.numero}
+
                 </div>
 
                 <div class="status ${matriz.status.toLowerCase()}">
+
                     ${matriz.status}
+
                 </div>
 
             </div>
 
-            <div class="card-info">
+            <div class="info">
 
-                <div>
-                    <strong>Lote:</strong>
-                    ${matriz.lote || '-'}
-                </div>
+                <strong>Lote:</strong>
+
+                ${matriz.lote || '-'}
 
             </div>
 
-            <div class="card-botoes">
+            <div class="botoes">
 
-                <button onclick="alterarStatus(${index}, 'Prenha')">
+                <button
+                class="btn-status btn-prenha"
+                onclick="alterarStatus(${index}, 'Prenha')">
+
                     Prenha
+
                 </button>
 
-                <button onclick="alterarStatus(${index}, 'Vazia')">
+                <button
+                class="btn-status btn-vazia"
+                onclick="alterarStatus(${index}, 'Vazia')">
+
                     Vazia
+
                 </button>
 
-                <button onclick="excluirMatriz(${index})">
+                <button
+                class="btn-status btn-excluir"
+                onclick="excluirMatriz(${index})">
+
                     Excluir
+
                 </button>
 
             </div>
@@ -274,57 +331,74 @@ function renderizar() {
 
 }
 
-// =====================================================
+// ======================================================
 // INDICADORES
-// =====================================================
+// ======================================================
 
 function atualizarIndicadores() {
 
-    totalEl.textContent = matrizes.length;
+    totalMatrizes.textContent =
+    matrizes.length;
 
-    prenhasEl.textContent = matrizes.filter(
+    totalPrenhas.textContent =
+    matrizes.filter(
         m => m.status === 'Prenha'
     ).length;
 
-    vaziasEl.textContent = matrizes.filter(
+    totalVazias.textContent =
+    matrizes.filter(
         m => m.status === 'Vazia'
     ).length;
 
 }
 
-// =====================================================
+// ======================================================
 // FILTRO LOTES
-// =====================================================
+// ======================================================
 
 function atualizarFiltroLotes() {
 
-    const lotes = [...new Set(
-        matrizes
-            .map(m => m.lote)
-            .filter(Boolean)
-    )];
+    const lotes = [
+
+        ...new Set(
+
+            matrizes
+                .map(m => m.lote)
+                .filter(Boolean)
+
+        )
+
+    ];
 
     filtroLote.innerHTML = `
+
         <option value="">
+
             Todos os lotes
+
         </option>
+
     `;
 
     lotes.forEach(lote => {
 
         filtroLote.innerHTML += `
+
             <option value="${lote}">
+
                 ${lote}
+
             </option>
+
         `;
 
     });
 
 }
 
-// =====================================================
+// ======================================================
 // ALTERAR STATUS
-// =====================================================
+// ======================================================
 
 window.alterarStatus = function(index, status) {
 
@@ -336,17 +410,16 @@ window.alterarStatus = function(index, status) {
 
 };
 
-// =====================================================
-// EXCLUIR
-// =====================================================
+// ======================================================
+// EXCLUIR MATRIZ
+// ======================================================
 
 window.excluirMatriz = function(index) {
 
-    if (!confirm('Deseja excluir esta matriz?')) {
+    const confirmar =
+    confirm('Deseja excluir esta matriz?');
 
-        return;
-
-    }
+    if (!confirmar) return;
 
     matrizes.splice(index, 1);
 
@@ -356,16 +429,22 @@ window.excluirMatriz = function(index) {
 
 };
 
-// =====================================================
-// FILTRO
-// =====================================================
+// ======================================================
+// FILTROS
+// ======================================================
 
-filtroLote.addEventListener('change', renderizar);
+filtroLote.addEventListener(
+    'change',
+    renderizar
+);
 
-btnLimpar.addEventListener('click', () => {
+btnLimpar.addEventListener(
+    'click',
+    () => {
 
-    filtroLote.value = '';
+        filtroLote.value = '';
 
-    renderizar();
+        renderizar();
 
-});
+    }
+);
