@@ -1,343 +1,297 @@
-const STORAGE_KEY = "fazendaJsPlantelV12";
-let plantel = [];
+// ======================================================
+// BANCO LOCAL
+// ======================================================
 
-document.addEventListener("DOMContentLoaded", iniciar);
+const STORAGE_KEY = 'fazendajs_matrizes_v12';
 
-function el(id) {
-    return document.getElementById(id);
+let matrizes = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+// ======================================================
+// SALVAR
+// ======================================================
+
+function salvarStorage() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(matrizes));
 }
 
-function getBusca() {
-    return el("inputBusca") || el("buscaBrinco");
+// ======================================================
+// TOAST
+// ======================================================
+
+function mostrarToast(texto) {
+
+    const toast = document.getElementById('toast');
+
+    toast.innerText = texto;
+    toast.classList.add('show');
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
 }
 
-function getLote() {
-    return el("inputLote") || el("novoLote");
+// ======================================================
+// MODAL
+// ======================================================
+
+function abrirModalCadastro() {
+    document.getElementById('modalCadastro').classList.remove('hidden');
 }
 
-function getLista() {
-    return el("listaMatrizes") || el("listaContatos");
+function fecharModalCadastro() {
+    document.getElementById('modalCadastro').classList.add('hidden');
 }
 
-function iniciar() {
-    carregarDados();
-    atualizarTela();
-    registrarServiceWorker();
-}
+// ======================================================
+// CADASTRAR MATRIZ
+// ======================================================
 
-function carregarDados() {
-    try {
-        const dados = JSON.parse(localStorage.getItem(STORAGE_KEY));
-        plantel = Array.isArray(dados) ? dados : [];
-    } catch {
-        plantel = [];
-    }
-}
+function salvarMatrizModal() {
 
-function salvarDados() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(plantel));
-}
+    const numero = document.getElementById('modalNumero').value.trim();
+    const lote = document.getElementById('modalLote').value.trim();
+    const obs = document.getElementById('modalObs').value.trim();
+    const status = document.getElementById('modalStatus').value;
 
-function cadastrarMatriz() {
-    const campoBusca = getBusca();
-    const campoLote = getLote();
-
-    const brinco = (campoBusca?.value || "").trim().toUpperCase();
-    const lote = (campoLote?.value || "").trim() || "Sem lote";
-
-    if (!brinco) {
-        toast("Digite a identificação da matriz.");
+    if (!numero) {
+        mostrarToast('Digite o número da matriz');
         return;
     }
 
-    if (plantel.some(m => m.brinco === brinco)) {
-        toast("Matriz já cadastrada.");
-        return;
-    }
-
-    plantel.push({
-        brinco,
+    const nova = {
+        id: Date.now(),
+        numero,
         lote,
-        status: "Sem diagnóstico",
-        historico: [],
-        partos: [],
-        criadoEm: new Date().toISOString()
-    });
+        obs,
+        status
+    };
 
-    salvarDados();
+    matrizes.unshift(nova);
 
-    if (campoBusca) campoBusca.value = "";
-    if (campoLote) campoLote.value = "";
+    salvarStorage();
 
-    atualizarTela();
-    toast("Matriz cadastrada com sucesso.");
-}
-
-function atualizarTela() {
-    atualizarResumo();
+    atualizarDashboard();
+    renderizarMatrizes();
     atualizarFiltroLotes();
-    renderizarLista();
+
+    fecharModalCadastro();
+
+    document.getElementById('modalNumero').value = '';
+    document.getElementById('modalLote').value = '';
+    document.getElementById('modalObs').value = '';
+
+    mostrarToast('Matriz cadastrada com sucesso');
 }
 
-function atualizarResumo() {
-    const total = plantel.length;
-    const prenhas = plantel.filter(m => m.status === "Prenha").length;
-    const vazias = plantel.filter(m => m.status === "Vazia").length;
+// ======================================================
+// RENDER
+// ======================================================
 
-    if (el("statTotal")) el("statTotal").textContent = total;
-    if (el("statPrenha")) el("statPrenha").textContent = prenhas;
-    if (el("statVazia")) el("statVazia").textContent = vazias;
+function renderizarMatrizes(lista = matrizes) {
 
-    if (el("totalMatrizes")) el("totalMatrizes").textContent = total;
-    if (el("totalPrenhas")) el("totalPrenhas").textContent = prenhas;
-    if (el("totalVazias")) el("totalVazias").textContent = vazias;
-}
+    const container = document.getElementById('listaMatrizes');
 
-function renderizarLista() {
-    const lista = getLista();
-    if (!lista) return;
+    container.innerHTML = '';
 
-    const busca = (getBusca()?.value || "").trim().toUpperCase();
-    const filtroLote = el("filtroLote")?.value || "";
+    if (lista.length === 0) {
 
-    const filtradas = plantel.filter(m => {
-        const passaBusca = !busca || m.brinco.includes(busca);
-        const passaLote = !filtroLote || m.lote === filtroLote;
-        return passaBusca && passaLote;
-    });
-
-    lista.innerHTML = "";
-
-    if (filtradas.length === 0) {
-        lista.innerHTML = `
-            <li class="p-5 text-center text-gray-300 italic">
-                Nenhuma matriz cadastrada.
-            </li>
+        container.innerHTML = `
+            <div class="empty-state">
+                Nenhuma matriz encontrada.
+            </div>
         `;
+
         return;
     }
 
-    filtradas.forEach(m => {
-        const li = document.createElement("li");
+    lista.forEach(item => {
 
-        li.innerHTML = `
-            <div class="flex justify-between items-center gap-4">
+        const statusClass =
+            item.status === 'Prenha'
+                ? 'badge-prenha'
+                : 'badge-vazia';
+
+        const card = document.createElement('div');
+
+        card.className = 'matriz-card';
+
+        card.innerHTML = `
+
+            <div class="card-top">
+
                 <div>
-                    <div class="text-2xl font-black">${m.brinco}</div>
-                    <div class="text-gray-400">${m.lote}</div>
+
+                    <div class="matriz-numero">
+                        ${item.numero}
+                    </div>
+
+                    <div class="matriz-lote">
+                        ${item.lote || 'Sem lote'}
+                    </div>
+
                 </div>
 
-                <div class="font-bold px-4 py-2 rounded-full ${classeStatus(m.status)}">
-                    ${m.status}
+                <div class="status-badge ${statusClass}">
+                    ${item.status}
                 </div>
+
             </div>
 
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-5">
-                <button class="btn-secondary bg-green-700" onclick="alterarStatus('${m.brinco}', 'Prenha')">
+            <div class="card-obs">
+                ${item.obs || 'Sem observações'}
+            </div>
+
+            <div class="card-actions">
+
+                <button
+                    class="btn-prenha"
+                    onclick="alterarStatus(${item.id}, 'Prenha')"
+                >
                     Prenha
                 </button>
 
-                <button class="btn-secondary bg-red-700" onclick="alterarStatus('${m.brinco}', 'Vazia')">
+                <button
+                    class="btn-vazia"
+                    onclick="alterarStatus(${item.id}, 'Vazia')"
+                >
                     Vazia
                 </button>
 
-                <button class="btn-secondary" onclick="registrarParto('${m.brinco}')">
-                    Parto
-                </button>
-
-                <button class="btn-secondary bg-red-900" onclick="excluirMatriz('${m.brinco}')">
+                <button
+                    class="btn-delete"
+                    onclick="excluirMatriz(${item.id})"
+                >
                     Excluir
                 </button>
+
             </div>
         `;
 
-        lista.appendChild(li);
+        container.appendChild(card);
     });
 }
 
-function classeStatus(status) {
-    if (status === "Prenha") return "bg-green-800 text-green-100";
-    if (status === "Vazia") return "bg-red-800 text-red-100";
-    return "bg-slate-700 text-slate-100";
+// ======================================================
+// STATUS
+// ======================================================
+
+function alterarStatus(id, status) {
+
+    const item = matrizes.find(m => m.id === id);
+
+    if (!item) return;
+
+    item.status = status;
+
+    salvarStorage();
+
+    atualizarDashboard();
+    renderizarMatrizes();
+
+    mostrarToast('Status atualizado');
 }
 
-function alterarStatus(brinco, status) {
-    const matriz = plantel.find(m => m.brinco === brinco);
-    if (!matriz) return;
+// ======================================================
+// EXCLUIR
+// ======================================================
 
-    matriz.status = status;
+function excluirMatriz(id) {
 
-    matriz.historico.unshift({
-        data: new Date().toISOString(),
-        tipo: "Diagnóstico",
-        status
-    });
-
-    salvarDados();
-    atualizarTela();
-    toast("Status atualizado.");
-}
-
-function registrarParto(brinco) {
-    const matriz = plantel.find(m => m.brinco === brinco);
-    if (!matriz) return;
-
-    const data = prompt("Data do parto AAAA-MM-DD:", new Date().toISOString().slice(0, 10));
-    if (!data) return;
-
-    matriz.partos.unshift({
-        data,
-        criadoEm: new Date().toISOString()
-    });
-
-    salvarDados();
-    atualizarTela();
-    toast("Parto registrado.");
-}
-
-function excluirMatriz(brinco) {
-    if (!confirm(`Excluir matriz ${brinco}?`)) return;
-
-    plantel = plantel.filter(m => m.brinco !== brinco);
-
-    salvarDados();
-    atualizarTela();
-    toast("Matriz excluída.");
-}
-
-function atualizarFiltroLotes() {
-    const filtro = el("filtroLote");
-    const datalist = el("opcoesLotes");
-
-    const lotes = [...new Set(plantel.map(m => m.lote).filter(Boolean))];
-
-    if (filtro) {
-        const atual = filtro.value;
-        filtro.innerHTML = `<option value="">Todos os lotes</option>`;
-
-        lotes.forEach(lote => {
-            const opt = document.createElement("option");
-            opt.value = lote;
-            opt.textContent = lote;
-            filtro.appendChild(opt);
-        });
-
-        filtro.value = atual;
-    }
-
-    if (datalist) {
-        datalist.innerHTML = "";
-        lotes.forEach(lote => {
-            const opt = document.createElement("option");
-            opt.value = lote;
-            datalist.appendChild(opt);
-        });
-    }
-}
-
-function filtrarMatrizes() {
-    renderizarLista();
-}
-
-function onBuscaInput() {
-    renderizarLista();
-}
-
-function limparFiltros() {
-    if (getBusca()) getBusca().value = "";
-    if (el("filtroLote")) el("filtroLote").value = "";
-
-    renderizarLista();
-}
-
-function exportarBackup() {
-    const blob = new Blob([JSON.stringify(plantel, null, 2)], {
-        type: "application/json"
-    });
-
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-
-    a.href = url;
-    a.download = `fazendajs-backup-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-
-    URL.revokeObjectURL(url);
-    toast("Backup exportado.");
-}
-
-function importarDados(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-
-    reader.onload = e => {
-        try {
-            const dados = JSON.parse(e.target.result);
-            plantel = Array.isArray(dados) ? dados : dados.plantel || [];
-
-            salvarDados();
-            atualizarTela();
-            toast("Backup importado.");
-        } catch {
-            toast("Arquivo inválido.");
-        }
-    };
-
-    reader.readAsText(file);
-}
-
-function gerarPDFGeral() {
-    if (!window.jspdf) {
-        window.print();
+    if (!confirm('Deseja excluir esta matriz?')) {
         return;
     }
 
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
+    matrizes = matrizes.filter(m => m.id !== id);
 
-    doc.text("Fazenda JS - Plantel", 14, 15);
+    salvarStorage();
 
-    plantel.forEach((m, i) => {
-        doc.text(`${m.brinco} - ${m.lote} - ${m.status}`, 14, 30 + i * 8);
+    atualizarDashboard();
+    renderizarMatrizes();
+    atualizarFiltroLotes();
+
+    mostrarToast('Matriz excluída');
+}
+
+// ======================================================
+// DASHBOARD
+// ======================================================
+
+function atualizarDashboard() {
+
+    document.getElementById('totalMatrizes').textContent =
+        matrizes.length;
+
+    document.getElementById('totalPrenhas').textContent =
+        matrizes.filter(m => m.status === 'Prenha').length;
+
+    document.getElementById('totalVazias').textContent =
+        matrizes.filter(m => m.status === 'Vazia').length;
+}
+
+// ======================================================
+// FILTRO
+// ======================================================
+
+function atualizarFiltroLotes() {
+
+    const select = document.getElementById('filtroLote');
+
+    const lotes = [...new Set(
+        matrizes
+            .map(m => m.lote)
+            .filter(Boolean)
+    )];
+
+    select.innerHTML =
+        '<option value="">Todos os lotes</option>';
+
+    lotes.forEach(lote => {
+
+        const option = document.createElement('option');
+
+        option.value = lote;
+        option.textContent = lote;
+
+        select.appendChild(option);
+    });
+}
+
+function filtrarMatrizes() {
+
+    const busca =
+        document.getElementById('buscaInput')
+            .value
+            .toLowerCase();
+
+    const lote =
+        document.getElementById('filtroLote').value;
+
+    const filtradas = matrizes.filter(item => {
+
+        const matchBusca =
+            item.numero.toLowerCase().includes(busca);
+
+        const matchLote =
+            !lote || item.lote === lote;
+
+        return matchBusca && matchLote;
     });
 
-    doc.save("fazendajs-plantel.pdf");
+    renderizarMatrizes(filtradas);
 }
 
-function alternarTema() {
-    document.documentElement.classList.toggle("dark");
-    toast("Tema alternado.");
+function limparFiltros() {
+
+    document.getElementById('buscaInput').value = '';
+    document.getElementById('filtroLote').value = '';
+
+    renderizarMatrizes();
 }
 
-function toast(msg) {
-    const t = el("toast");
-    if (!t) return;
+// ======================================================
+// INIT
+// ======================================================
 
-    t.textContent = msg;
-    t.classList.add("show");
-
-    setTimeout(() => {
-        t.classList.remove("show");
-    }, 2500);
-}
-
-function registrarServiceWorker() {
-    if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("./sw.js").catch(() => {});
-    }
-}
-
-window.cadastrarMatriz = cadastrarMatriz;
-window.cadastrarMatrizRapido = cadastrarMatriz;
-window.onBuscaInput = onBuscaInput;
-window.filtrarMatrizes = filtrarMatrizes;
-window.limparFiltros = limparFiltros;
-window.alterarStatus = alterarStatus;
-window.registrarParto = registrarParto;
-window.excluirMatriz = excluirMatriz;
-window.exportarBackup = exportarBackup;
-window.importarDados = importarDados;
-window.gerarPDFGeral = gerarPDFGeral;
-window.alternarTema = alternarTema;
+atualizarDashboard();
+renderizarMatrizes();
+atualizarFiltroLotes();
