@@ -608,47 +608,60 @@ href="./assets/img/icon-192.png">
                 })
                 .filter(Boolean);
         }
+function carregarDados() {
 
-        function carregarDados() {
-            const chaves = [DB.plantel, DB.plantelV10, DB.plantelV9, DB.plantelV8];
+    try {
 
-            for (const chave of chaves) {
-                try {
-                    const dados = JSON.parse(localStorage.getItem(chave));
-                    const normalizados = normalizarPlantel(dados);
+        const dados =
+            JSON.parse(
+                localStorage.getItem(DB.plantel)
+            );
 
-                    if (normalizados.length > 0) {
-                        plantel = normalizados;
-                        if (chave !== DB.plantel) {
-                            salvarDados(false);
-                            registrarLog('Migração de dados concluída', { origem: chave });
-                        }
-                        return;
-                    }
-                } catch {
-                    // continua tentando versões antigas
-                }
-            }
+        plantel =
+            normalizarPlantel(dados);
 
-            plantel = [];
+    } catch {
+
+        plantel = [];
+
+    }
+
+}
+function salvarDados(comLogBackup = true) {
+
+    try {
+
+        localStorage.setItem(
+            DB.plantel,
+            JSON.stringify(plantel)
+        );
+
+        if (comLogBackup) {
+
+            fazerBackupAutomatico(
+                'Salvamento'
+            );
+
         }
 
-        function salvarDados(comLogBackup = true) {
-            try {
-                localStorage.setItem(DB.plantel, JSON.stringify(plantel));
+        atualizarDatalistLotes();
 
-                if (comLogBackup) {
-                    fazerBackupAutomatico('Salvamento local');
-                }
+        atualizarFiltroLotes();
 
-                atualizarDatalistLotes();
-                atualizarFiltroLotes();
+        agendarSincronizacaoSupabase();
 
-                agendarSincronizacaoSupabase();
-            } catch (e) {
-                mostrarToast('Erro ao salvar no LocalStorage. Verifique o espaço do navegador.', 'erro');
-            }
-        }
+    } catch (e) {
+
+        console.error(e);
+
+        mostrarToast(
+            'Erro ao salvar dados.',
+            'erro'
+        );
+
+    }
+
+}
 
         function matrizParaSupabase(matriz) {
             const historico = Array.isArray(matriz.historico) ? matriz.historico : [];
@@ -750,10 +763,7 @@ href="./assets/img/icon-192.png">
                         if (erroInsert) console.error('Erro ao inserir Supabase:', erroInsert);
                     }
                 }
-
-                console.log('FazendaJS: sincronização Supabase concluída.');
-            } catch (err) {
-                // =====================================================
+// =====================================================
 // REMOVER REGISTROS APAGADOS LOCALMENTE
 // =====================================================
 
@@ -783,43 +793,80 @@ if (Array.isArray(registrosRemotos)) {
     }
 
 }
-                console.error('Falha geral na sincronização Supabase:', err);
-            } finally {
-                _sincronizando = false;
-            }
-        }
-
-        async function carregarDadosSupabase() {
-            if (!supabaseClient) return false;
-
-            try {
-                const { data, error } = await supabaseClient
-                    .from('matrizes')
-                    .select('*')
-                    .order('numero', { ascending: true });
-
-                if (error) {
-                    console.error('Erro ao carregar Supabase:', error);
-                    return false;
-                }
-
-                if (!Array.isArray(data) || data.length === 0) {
-                    agendarSincronizacaoSupabase();
-                    return false;
-                }
-
-                const remoto = normalizarPlantel(data.map(supabaseParaMatriz));
-                plantel = mesclarPlantel(plantel, remoto);
-
-                localStorage.setItem(DB.plantel, JSON.stringify(plantel));
-                fazerBackupAutomatico('Carga Supabase');
-
-                return true;
+                console.log('FazendaJS: sincronização Supabase concluída.');
             } catch (err) {
-                console.error('Falha ao carregar dados do Supabase:', err);
-                return false;
-            }
+
+    console.error(
+        'Falha geral na sincronização Supabase:',
+        err
+    );
+
+} finally {
+
+    _sincronizando = false;
+
+}
+
+}
+
+async function carregarDadosSupabase() {
+
+    if (!supabaseClient) return false;
+
+    try {
+
+        const { data, error } = await supabaseClient
+            .from('matrizes')
+            .select('*')
+            .order('numero', { ascending: true });
+
+        if (error) {
+
+            console.error(
+                'Erro ao carregar Supabase:',
+                error
+            );
+
+            return false;
+
         }
+
+        if (!Array.isArray(data)) {
+
+            return false;
+
+        }
+
+        const remoto =
+            normalizarPlantel(
+                data.map(supabaseParaMatriz)
+            );
+
+        plantel =
+    mesclarPlantel(
+        plantel,
+        remoto
+    );
+
+        localStorage.setItem(
+            DB.plantel,
+            JSON.stringify(plantel)
+        );
+
+        return true;
+
+    } catch (err) {
+
+        console.error(
+            'Falha ao carregar dados do Supabase:',
+            err
+        );
+
+        return false;
+
+    }
+
+}
 
         // ============================================================
         // INICIALIZAÇÃO
