@@ -1,356 +1,263 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-    <meta charset="UTF-8" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Fazenda JS</title>
 
-    <meta name="theme-color" content="#14532d" />
+  <meta name="theme-color" content="#16a34a" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
-    <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="./assets/css/style.css" />
 
-    <meta name="apple-mobile-web-app-status-bar-style"
-        content="black-translucent" />
-
-    <title>FazendaJS</title>
-
-    <!-- PWA -->
-    <link rel="manifest" href="./manifest.json" />
-
-    <!-- Tailwind -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Font Awesome -->
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-
-    <!-- jsPDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-
-    <!-- Tailwind Config -->
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        jsgreen: {
-                            50: '#f0fdf4',
-                            100: '#dcfce7',
-                            500: '#22c55e',
-                            700: '#15803d',
-                            900: '#14532d'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-
-    <!-- CSS -->
-    <link rel="stylesheet" href="./assets/css/style.css">
-
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-slate-950 text-white font-sans min-h-screen">
+<body>
 
-    <!-- TOAST -->
-    <div id="toast"></div>
+  <!-- ===================================================== -->
+  <!-- HEADER -->
+  <!-- ===================================================== -->
 
-    <!-- DATALIST -->
-    <datalist id="opcoesLotes"></datalist>
+  <header class="app-header">
 
-    <!-- HEADER -->
-    <header
-        class="backdrop-blur-xl bg-black/30 border-b border-white/10 sticky top-0 z-50">
+    <div class="logo-area">
 
-        <div
-            class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="logo-icon">
+        🐄
+      </div>
 
-            <div class="flex items-center gap-4">
+      <div>
+        <h1 class="logo-title">Fazenda JS</h1>
+        <p class="logo-subtitle">Gestão Inteligente v12</p>
+      </div>
 
-                <div
-                    class="w-14 h-14 rounded-2xl bg-green-600 flex items-center justify-center shadow-2xl">
+    </div>
 
-                    <i class="fa-solid fa-cow text-2xl text-white"></i>
+    <div class="header-actions">
 
-                </div>
+      <button class="icon-btn">
+        🌙
+      </button>
 
-                <div>
+      <button class="icon-btn">
+        ☁️
+      </button>
 
-                    <h1 class="text-3xl font-black leading-none">
-                        Fazenda JS
-                    </h1>
+      <button class="icon-btn">
+        ⬇️
+      </button>
 
-                    <span class="text-sm text-gray-300">
-                        Gestão Inteligente v12
-                    </span>
+      <button class="pdf-btn">
+        PDF
+      </button>
 
-                </div>
+    </div>
 
-            </div>
+  </header>
 
-            <div class="flex gap-2">
+  <!-- ===================================================== -->
+  <!-- MAIN -->
+  <!-- ===================================================== -->
 
-                <!-- TEMA -->
-                <button
-                    onclick="alternarTema()"
-                    class="w-12 h-12 rounded-2xl bg-white/10 hover:bg-white/20 transition flex items-center justify-center">
+  <main class="main-container">
 
-                    <i class="fa-solid fa-moon"></i>
+    <!-- ===================================================== -->
+    <!-- CARD CADASTRO -->
+    <!-- ===================================================== -->
 
-                </button>
+    <section class="glass-card">
 
-                <!-- IMPORTAR -->
-                <input type="file"
-                    id="inputImportar"
-                    class="hidden"
-                    accept=".json"
-                    onchange="importarDados(event)">
+      <input
+        type="text"
+        id="buscaInput"
+        class="main-input"
+        placeholder="DIGITE O NÚMERO OU NOME..."
+        oninput="filtrarMatrizes()"
+      />
 
-                <button
-                    onclick="document.getElementById('inputImportar').click()"
-                    class="w-12 h-12 rounded-2xl bg-white/10 hover:bg-white/20 transition flex items-center justify-center">
+      <input
+        type="text"
+        id="loteInput"
+        class="main-input"
+        placeholder="Lote (Opcional)"
+      />
 
-                    <i class="fa-solid fa-upload"></i>
+      <button
+        class="main-button"
+        onclick="abrirModalCadastro()"
+      >
+        ➕ Cadastrar Matriz
+      </button>
 
-                </button>
+    </section>
 
-                <!-- BACKUP -->
-                <button
-                    onclick="exportarBackup()"
-                    class="w-12 h-12 rounded-2xl bg-white/10 hover:bg-white/20 transition flex items-center justify-center">
+    <!-- ===================================================== -->
+    <!-- FILTRO -->
+    <!-- ===================================================== -->
 
-                    <i class="fa-solid fa-download"></i>
+    <section class="glass-card">
 
-                </button>
+      <div class="filtro-row">
 
-                <!-- PDF -->
-                <button
-                    onclick="gerarPDFGeral()"
-                    class="px-4 rounded-2xl bg-green-600 hover:bg-green-700 transition font-bold">
+        <select
+          id="filtroLote"
+          class="select-input"
+          onchange="filtrarMatrizes()"
+        >
+          <option value="">Todos os lotes</option>
+        </select>
 
-                    PDF
+        <button
+          class="clear-btn"
+          onclick="limparFiltros()"
+        >
+          Limpar
+        </button>
 
-                </button>
+      </div>
 
-            </div>
+    </section>
+
+    <!-- ===================================================== -->
+    <!-- DASHBOARD -->
+    <!-- ===================================================== -->
+
+    <section class="dashboard-grid">
 
-        </div>
+      <div class="dashboard-card">
+        <h2 id="totalMatrizes">0</h2>
+        <span>TOTAL</span>
+      </div>
+
+      <div class="dashboard-card">
+        <h2 class="text-green" id="totalPrenhas">0</h2>
+        <span>PRENHAS</span>
+      </div>
+
+      <div class="dashboard-card">
+        <h2 class="text-red" id="totalVazias">0</h2>
+        <span>VAZIAS</span>
+      </div>
+
+    </section>
 
-    </header>
+    <!-- ===================================================== -->
+    <!-- LISTA -->
+    <!-- ===================================================== -->
 
-    <!-- MAIN -->
-    <main class="max-w-6xl mx-auto px-4 py-6">
+    <section
+      id="listaMatrizes"
+      class="lista-matrizes"
+    >
+    </section>
 
-        <!-- BUSCA -->
-        <section
-            class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-2xl mb-6">
+  </main>
 
-            <h2 class="text-3xl font-black mb-6 text-center">
+  <!-- ===================================================== -->
+  <!-- MENU INFERIOR -->
+  <!-- ===================================================== -->
 
-                Buscar ou Cadastrar Matriz
+  <nav class="bottom-nav">
 
-            </h2>
+    <button class="nav-btn active">
+      🏠
+    </button>
 
-            <div class="space-y-4">
+    <button class="nav-btn">
+      📊
+    </button>
 
-                <!-- INPUT -->
-                <input
-                    id="inputBusca"
-                    type="text"
-                    placeholder="DIGITE O NÚMERO OU NOME..."
-                    class="w-full rounded-2xl bg-black/30 border border-white/10 px-5 py-5 text-2xl font-bold outline-none focus:border-green-500"
-                    oninput="onBuscaInput()">
+    <button class="nav-btn">
+      ☁️
+    </button>
 
-                <!-- LOTE -->
-                <input
-                    id="inputLote"
-                    type="text"
-                    placeholder="Lote (Opcional)"
-                    list="opcoesLotes"
-                    class="w-full rounded-2xl bg-black/30 border border-white/10 px-5 py-4 outline-none focus:border-green-500">
+    <button class="nav-btn">
+      ⚙️
+    </button>
 
-                <!-- BOTÃO -->
-                <button
-                    id="btnCadastrar"
-                    onclick="cadastrarMatriz()"
-                    class="w-full bg-green-600 hover:bg-green-700 transition rounded-2xl py-5 text-xl font-black shadow-2xl">
+  </nav>
 
-                    <i class="fa-solid fa-plus mr-2"></i>
+  <!-- ===================================================== -->
+  <!-- MODAL -->
+  <!-- ===================================================== -->
 
-                    Cadastrar Matriz
+  <div
+    id="modalCadastro"
+    class="modal-overlay hidden"
+  >
 
-                </button>
+    <div class="modal-box">
 
-            </div>
+      <h2 class="modal-title">
+        Nova Matriz
+      </h2>
 
-        </section>
+      <input
+        type="text"
+        id="modalNumero"
+        class="modal-input"
+        placeholder="Número da matriz"
+      />
 
-        <!-- FILTRO -->
-        <section
-            class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-2xl mb-6">
+      <input
+        type="text"
+        id="modalLote"
+        class="modal-input"
+        placeholder="Lote"
+      />
 
-            <div class="flex gap-3">
+      <textarea
+        id="modalObs"
+        class="modal-textarea"
+        placeholder="Observações"
+      ></textarea>
 
-                <select
-                    id="filtroLote"
-                    onchange="filtrarMatrizes()"
-                    class="flex-1 rounded-2xl bg-black/30 border border-white/10 px-5 py-4 outline-none focus:border-green-500">
+      <select
+        id="modalStatus"
+        class="modal-input"
+      >
+        <option value="Prenha">Prenha</option>
+        <option value="Vazia">Vazia</option>
+      </select>
 
-                    <option value="">
-                        Todos os lotes
-                    </option>
+      <div class="modal-actions">
 
-                </select>
+        <button
+          class="cancel-btn"
+          onclick="fecharModalCadastro()"
+        >
+          Cancelar
+        </button>
 
-                <button
-                    onclick="limparFiltros()"
-                    class="px-5 rounded-2xl bg-white/10 hover:bg-white/20 transition font-bold">
+        <button
+          class="save-btn"
+          onclick="salvarMatrizModal()"
+        >
+          Salvar
+        </button>
 
-                    Limpar
+      </div>
 
-                </button>
+    </div>
 
-            </div>
+  </div>
 
-        </section>
+  <!-- ===================================================== -->
+  <!-- TOAST -->
+  <!-- ===================================================== -->
 
-        <!-- CARDS -->
-        <section
-            class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+  <div id="toast"></div>
 
-            <div
-                class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 text-center shadow-xl">
+  <!-- ===================================================== -->
+  <!-- JS -->
+  <!-- ===================================================== -->
 
-                <div
-                    id="statTotal"
-                    class="text-5xl font-black">
-
-                    0
-
-                </div>
-
-                <div class="text-gray-400 font-bold mt-2">
-                    TOTAL
-                </div>
-
-            </div>
-
-            <div
-                class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 text-center shadow-xl">
-
-                <div
-                    id="statPrenha"
-                    class="text-5xl font-black text-green-400">
-
-                    0
-
-                </div>
-
-                <div class="text-gray-400 font-bold mt-2">
-                    PRENHAS
-                </div>
-
-            </div>
-
-            <div
-                class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 text-center shadow-xl">
-
-                <div
-                    id="statVazia"
-                    class="text-5xl font-black text-red-400">
-
-                    0
-
-                </div>
-
-                <div class="text-gray-400 font-bold mt-2">
-                    VAZIAS
-                </div>
-
-            </div>
-
-        </section>
-
-        <!-- LISTA -->
-        <ul
-            id="listaMatrizes"
-            class="space-y-4 pb-32">
-
-        </ul>
-
-    </main>
-
-    <!-- MENU -->
-    <nav
-        class="fixed bottom-0 left-0 right-0 bg-black/40 backdrop-blur-2xl border-t border-white/10">
-
-        <div
-            class="max-w-4xl mx-auto grid grid-cols-4">
-
-            <button
-                class="py-4 flex flex-col items-center gap-1 text-green-400">
-
-                <i class="fa-solid fa-house text-xl"></i>
-
-                <span class="text-xs font-bold">
-                    Início
-                </span>
-
-            </button>
-
-            <button
-                class="py-4 flex flex-col items-center gap-1 text-gray-400">
-
-                <i class="fa-solid fa-chart-column text-xl"></i>
-
-                <span class="text-xs font-bold">
-                    Relatórios
-                </span>
-
-            </button>
-
-            <button
-                class="py-4 flex flex-col items-center gap-1 text-gray-400">
-
-                <i class="fa-solid fa-cloud text-xl"></i>
-
-                <span class="text-xs font-bold">
-                    Sync
-                </span>
-
-            </button>
-
-            <button
-                class="py-4 flex flex-col items-center gap-1 text-gray-400">
-
-                <i class="fa-solid fa-gear text-xl"></i>
-
-                <span class="text-xs font-bold">
-                    Config
-                </span>
-
-            </button>
-
-        </div>
-
-    </nav>
-
-    <!-- SW -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js');
-        }
-    </script>
-
-    <!-- JS -->
-    <script src="./assets/js/app.js"></script>
+  <script src="./assets/js/app.js"></script>
 
 </body>
-
 </html>
