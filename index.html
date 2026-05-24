@@ -1,735 +1,1528 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-
-<meta charset="UTF-8" />
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-<title>Fazenda JS v11</title>
-
-<meta name="theme-color" content="#15803d" />
-
-<link rel="manifest" href="manifest.json" />
-
-<link
-rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-/>
-
-<script src="https://cdn.tailwindcss.com"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<style>
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-}
-
-body{
-
-background:
-radial-gradient(circle at left, rgba(34,197,94,.15), transparent 25%),
-linear-gradient(to right,#010617,#04113b);
-
-font-family:Arial, Helvetica, sans-serif;
-color:white;
-min-height:100vh;
-padding-bottom:120px;
-
-}
-
-header{
-
-background:linear-gradient(to right,#166534,#15803d);
-
-padding:16px 20px;
-
-display:flex;
-justify-content:space-between;
-align-items:center;
-
-box-shadow:0 2px 10px rgba(0,0,0,.4);
-
-}
-
-.logo{
-
-display:flex;
-align-items:center;
-gap:14px;
-
-}
-
-.logo h1{
-
-font-size:24px;
-font-weight:800;
-
-}
-
-.logo span{
-
-font-size:14px;
-opacity:.8;
-
-}
-
-.top-actions{
-
-display:flex;
-gap:12px;
-
-}
-
-.top-btn{
-
-width:48px;
-height:48px;
-
-border:none;
-border-radius:14px;
-
-background:rgba(255,255,255,.12);
-
-color:white;
-
-font-size:20px;
-
-cursor:pointer;
-
-transition:.2s;
-
-}
-
-.top-btn:hover{
-
-transform:scale(1.05);
-
-background:rgba(255,255,255,.2);
-
-}
-
-.pdf-btn{
-
-background:white;
-color:#166534;
-font-weight:bold;
-padding:0 22px;
-width:auto;
-
-}
-
-.container{
-
-max-width:720px;
-margin:28px auto;
-padding:0 16px;
-
-}
-
-.card{
-
-background:rgba(255,255,255,.05);
-
-border:1px solid rgba(255,255,255,.08);
-
-backdrop-filter:blur(10px);
-
-border-radius:28px;
-
-padding:18px;
-
-margin-bottom:24px;
-
-box-shadow:0 8px 30px rgba(0,0,0,.3);
-
-}
-
-.card-title{
-
-text-align:center;
-
-font-size:18px;
-font-weight:700;
-
-margin-bottom:18px;
-
-}
-
-.input{
-
-width:100%;
-
-height:72px;
-
-border:none;
-outline:none;
-
-background:rgba(255,255,255,.05);
-
-border-radius:22px;
-
-padding:0 22px;
-
-font-size:20px;
-font-weight:700;
-
-color:white;
-
-margin-bottom:18px;
-
-border:1px solid rgba(255,255,255,.08);
-
-}
-
-.input::placeholder{
-
-color:rgba(255,255,255,.5);
-
-}
-
-.btn-main{
-
-width:100%;
-
-height:74px;
-
-border:none;
-border-radius:24px;
-
-background:linear-gradient(to right,#16a34a,#22c55e);
-
-color:white;
-
-font-size:18px;
-font-weight:800;
-
-cursor:pointer;
-
-transition:.2s;
-
-}
-
-.btn-main:hover{
-
-transform:scale(1.01);
-
-}
-
-.filtro-area{
-
-display:flex;
-gap:12px;
-
-}
-
-.select{
-
-flex:1;
-
-height:60px;
-
-background:rgba(255,255,255,.05);
-
-border:none;
-outline:none;
-
-border-radius:20px;
-
-padding:0 18px;
-
-color:white;
-
-font-size:16px;
-
-border:1px solid rgba(255,255,255,.08);
-
-}
-
-.btn-limpar{
-
-width:120px;
-
-border:none;
-border-radius:20px;
-
-background:#374151;
-
-color:white;
-
-font-size:18px;
-font-weight:700;
-
-cursor:pointer;
-
-}
-
-.stats{
-
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:18px;
-
-margin-bottom:26px;
-
-}
-
-.stat{
-
-background:rgba(255,255,255,.05);
-
-border-radius:28px;
-
-padding:28px 10px;
-
-text-align:center;
-
-border:1px solid rgba(255,255,255,.08);
-
-}
-
-.stat-num{
-
-font-size:54px;
-font-weight:900;
-
-}
-
-.stat-label{
-
-margin-top:8px;
-font-size:16px;
-opacity:.7;
-
-font-weight:700;
-
-}
-
-.branco{
-
-color:white;
-
-}
-
-.verde{
-
-color:#4ade80;
-
-}
-
-.vermelho{
-
-color:#f87171;
-
-}
-
-.lista{
-
-display:flex;
-flex-direction:column;
-gap:18px;
-
-}
-
-.matriz{
-
-background:rgba(255,255,255,.05);
-
-border-radius:24px;
-
-padding:18px;
-
-border:1px solid rgba(255,255,255,.08);
-
-}
-
-.topo-matriz{
-
-display:flex;
-justify-content:space-between;
-align-items:center;
-
-margin-bottom:16px;
-
-}
-
-.numero{
-
-font-size:30px;
-font-weight:900;
-
-}
-
-.status{
-
-padding:10px 18px;
-
-border-radius:999px;
-
-font-size:14px;
-font-weight:800;
-
-}
-
-.prenha{
-
-background:#14532d;
-color:#4ade80;
-
-}
-
-.vazia{
-
-background:#7f1d1d;
-color:#f87171;
-
-}
-
-.info{
-
-opacity:.8;
-margin-bottom:16px;
-
-}
-
-.botoes{
-
-display:flex;
-gap:10px;
-
-}
-
-.btn-status{
-
-flex:1;
-
-height:48px;
-
-border:none;
-border-radius:16px;
-
-cursor:pointer;
-
-font-weight:700;
-
-}
-
-.btn-prenha{
-
-background:#14532d;
-color:#4ade80;
-
-}
-
-.btn-vazia{
-
-background:#7f1d1d;
-color:#f87171;
-
-}
-
-.btn-excluir{
-
-background:#374151;
-color:white;
-
-}
-
-.bottom-nav{
-
-position:fixed;
-bottom:0;
-left:0;
-right:0;
-
-height:86px;
-
-background:rgba(0,0,0,.45);
-
-backdrop-filter:blur(14px);
-
-display:flex;
-justify-content:space-around;
-align-items:center;
-
-border-top:1px solid rgba(255,255,255,.08);
-
-}
-
-.nav-item{
-
-display:flex;
-flex-direction:column;
-align-items:center;
-gap:6px;
-
-font-size:13px;
-
-opacity:.7;
-
-}
-
-.nav-item i{
-
-font-size:22px;
-
-}
-
-.active{
-
-color:#4ade80;
-opacity:1;
-
-}
-
-.nenhuma{
-
-text-align:center;
-padding:40px 0;
-opacity:.6;
-font-style:italic;
-
-}
-
-@media(max-width:700px){
-
-.stats{
-
-grid-template-columns:1fr;
-
-}
-
-.filtro-area{
-
-flex-direction:column;
-
-}
-
-.btn-limpar{
-
-width:100%;
-height:60px;
-
-}
-
-}
-
-</style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#14532d">
+    <title>Fazenda JS - Gestão Fácil v11</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        jsgreen: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            700: '#15803d',
+                            900: '#14532d'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .input-gigante {
+            font-size: 1.25rem;
+            padding: 1rem;
+            text-align: center;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .escondido {
+            display: none !important;
+        }
+
+        #toast {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: bold;
+            color: white;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            max-width: 92vw;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        #toast.visivel {
+            opacity: 1;
+        }
+
+        .card-base {
+            background: white;
+        }
+
+        .dark .card-base {
+            background: #111827;
+            color: #f9fafb;
+            border-color: #374151;
+        }
+
+        .dark input,
+        .dark select,
+        .dark textarea {
+            background: #1f2937 !important;
+            color: #f9fafb !important;
+            border-color: #4b5563 !important;
+        }
+
+        .dark body {
+            background: #030712;
+            color: #f9fafb;
+        }
+    </style>
 </head>
 
-<body>
-
-<header>
-
-<div class="logo">
-
-<div style="font-size:28px;">🐄</div>
-
-<div>
-
-<h1>Fazenda JS <span>v11</span></h1>
-
-<span>Gestão Inteligente</span>
-
-</div>
-
-</div>
-
-<div class="top-actions">
-
-<button class="top-btn">
-<i class="fa-solid fa-moon"></i>
-</button>
-
-<button class="top-btn">
-<i class="fa-solid fa-cloud-arrow-up"></i>
-</button>
-
-<button class="top-btn">
-<i class="fa-solid fa-download"></i>
-</button>
-
-<button class="top-btn pdf-btn">
-PDF
-</button>
-
-</div>
-
-</header>
-
-<div class="container">
-
-<div class="card">
-
-<div class="card-title">
-Buscar ou Cadastrar Matriz
-</div>
-
-<input
-id="inputBusca"
-class="input"
-placeholder="DIGITE O NÚMERO OU NOME..."
-/>
-
-<input
-id="inputLote"
-class="input"
-placeholder="Lote (Opcional)"
-/>
-
-<button
-id="btnCadastrar"
-class="btn-main"
->
-
-<i class="fa-solid fa-plus"></i>
-
-Cadastrar Matriz
-
-</button>
-
-</div>
-
-<div class="card">
-
-<div class="filtro-area">
-
-<select
-id="filtroLote"
-class="select"
->
-
-<option value="">
-Todos os lotes
-</option>
-
-</select>
-
-<button
-id="btnLimpar"
-class="btn-limpar"
->
-
-Limpar
-
-</button>
-
-</div>
-
-</div>
-
-<div class="stats">
-
-<div class="stat">
-
-<div
-id="totalMatrizes"
-class="stat-num branco"
->
-
-0
-
-</div>
-
-<div class="stat-label">
-TOTAL
-</div>
-
-</div>
-
-<div class="stat">
-
-<div
-id="totalPrenhas"
-class="stat-num verde"
->
-
-0
-
-</div>
-
-<div class="stat-label">
-PRENHAS
-</div>
-
-</div>
-
-<div class="stat">
-
-<div
-id="totalVazias"
-class="stat-num vermelho"
->
-
-0
-
-</div>
-
-<div class="stat-label">
-VAZIAS
-</div>
-
-</div>
-
-</div>
-
-<div
-id="listaMatrizes"
-class="lista"
->
-
-<div class="nenhuma">
-
-Nenhuma matriz cadastrada.
-
-</div>
-
-</div>
-
-</div>
-
-<nav class="bottom-nav">
-
-<div class="nav-item active">
-
-<i class="fa-solid fa-house"></i>
-
-<span>Início</span>
-
-</div>
-
-<div class="nav-item">
-
-<i class="fa-solid fa-chart-column"></i>
-
-<span>Relatórios</span>
-
-</div>
-
-<div class="nav-item">
-
-<i class="fa-solid fa-cloud"></i>
-
-<span>Sync</span>
-
-</div>
-
-<div class="nav-item">
-
-<i class="fa-solid fa-gear"></i>
-
-<span>Config</span>
-
-</div>
-
-</nav>
-
-<script src="./assets/js/app.js"></script>
-
+<body class="bg-gray-100 text-gray-900 font-sans min-h-screen transition-colors">
+
+    <div id="toast"></div>
+
+    <datalist id="opcoesLotes"></datalist>
+
+    <header class="bg-jsgreen-900 text-white p-4 shadow-md sticky top-0 z-10 flex justify-between items-center">
+        <div class="flex items-center min-w-0">
+            <button id="btnVoltar" onclick="mostrarTela('lista')" class="escondido mr-3 text-white hover:text-gray-300" title="Voltar">
+                <i class="fa-solid fa-arrow-left fa-xl"></i>
+            </button>
+            <h1 id="tituloHeader" class="text-xl font-bold truncate">
+                <i class="fa-solid fa-cow mr-2"></i>Fazenda JS
+                <span class="text-xs font-normal text-gray-300 ml-1">v11</span>
+            </h1>
+        </div>
+
+        <div id="acoesHeader" class="flex gap-2 shrink-0">
+            <input type="file" id="inputImportar" class="escondido" accept=".json,application/json" onchange="importarDados(event)">
+
+            <button onclick="alternarTema()" class="bg-jsgreen-700 hover:bg-jsgreen-500 text-white px-3 py-2 rounded font-bold shadow text-sm transition" title="Alternar tema claro/escuro">
+                <i id="iconeTema" class="fa-solid fa-moon"></i>
+            </button>
+
+            <button onclick="document.getElementById('inputImportar').click()" class="bg-jsgreen-700 hover:bg-jsgreen-500 text-white px-3 py-2 rounded font-bold shadow text-sm transition" title="Importar Backup">
+                <i class="fa-solid fa-upload"></i>
+            </button>
+
+            <button onclick="exportarBackup()" class="bg-jsgreen-700 hover:bg-jsgreen-500 text-white px-3 py-2 rounded font-bold shadow text-sm transition" title="Fazer Backup">
+                <i class="fa-solid fa-download"></i>
+            </button>
+
+            <button onclick="gerarPDFGeral()" class="bg-white text-jsgreen-900 px-3 py-2 rounded font-bold shadow text-sm" title="Gerar PDF geral">
+                <i class="fa-solid fa-file-pdf"></i> PDF
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-xl mx-auto p-4 mt-2">
+
+        <div id="tela-lista">
+
+            <div class="card-base bg-white p-4 rounded-xl shadow-md mb-4 border-2 border-jsgreen-500">
+                <label class="block text-gray-700 dark:text-gray-200 font-bold mb-2 text-center text-lg">Buscar ou Cadastrar Matriz</label>
+
+                <input
+                    type="text"
+                    id="buscaBrinco"
+                    oninput="onBuscaInput()"
+                    class="input-gigante w-full rounded-lg border-gray-300 border focus:border-jsgreen-700 focus:ring-0 bg-gray-50"
+                    placeholder="Digite o número ou nome..."
+                    autocapitalize="characters"
+                    maxlength="30"
+                    autocomplete="off"
+                >
+
+                <div id="painelLote" class="escondido mt-3 border-t pt-3">
+                    <label class="block text-gray-600 dark:text-gray-300 font-bold mb-1 text-sm">
+                        Lote Inicial <span class="font-normal text-gray-400">(Opcional)</span>
+                    </label>
+                    <input
+                        type="text"
+                        id="novoLote"
+                        list="opcoesLotes"
+                        class="w-full text-base p-3 rounded-lg border border-gray-300 bg-gray-50"
+                        placeholder="Ex: Lote A, Piquete 3..."
+                        maxlength="40"
+                        autocomplete="off"
+                    >
+                </div>
+
+                <button id="btnCadastrarNovo" onclick="cadastrarMatrizRapido()" class="w-full bg-jsgreen-700 text-white font-bold py-3 px-4 rounded-lg mt-3 hover:bg-jsgreen-900 text-lg shadow-lg transition">
+                    <i class="fa-solid fa-plus mr-2"></i>Cadastrar Matriz <span id="numNovoBrinco"></span>
+                </button>
+            </div>
+
+            <div class="card-base bg-white rounded-xl shadow-sm border p-3 mb-4">
+                <label class="block text-gray-700 dark:text-gray-200 font-bold mb-1 text-sm">
+                    Filtrar por lote
+                </label>
+                <div class="flex gap-2">
+                    <select id="filtroLote" onchange="filtrarMatrizes()" class="flex-1 text-base p-3 rounded-lg border border-gray-300 bg-gray-50">
+                        <option value="">Todos os lotes</option>
+                    </select>
+                    <button onclick="limparFiltros()" class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 px-3 rounded-lg font-bold">
+                        Limpar
+                    </button>
+                </div>
+            </div>
+
+            <div id="resumoPlantel" class="grid grid-cols-3 gap-2 mb-4"></div>
+
+            <ul id="listaContatos" class="space-y-2 pb-10"></ul>
+        </div>
+
+        <div id="tela-perfil" class="escondido space-y-4 pb-10">
+            <input type="hidden" id="perfilBrincoAtual">
+
+            <div class="card-base bg-white rounded-xl shadow-md p-6 text-center border-t-8 border-jsgreen-700">
+                <p class="text-gray-500 dark:text-gray-300 font-semibold uppercase tracking-widest text-sm">Matriz</p>
+                <h2 id="perfilNome" class="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white my-2 break-words">--</h2>
+                <div id="perfilUltimoStatus" class="inline-block px-4 py-1 rounded-full text-sm font-bold bg-gray-200 mt-1">-</div>
+                <div class="mt-2">
+                    <span id="perfilLoteBadge" class="escondido inline-block px-3 py-1 rounded-full text-xs font-bold bg-orange-100 text-orange-700 mt-1"></span>
+                </div>
+                <div class="mt-4 flex gap-2">
+                    <button onclick="enviarWhatsAppPerfil()" class="flex-1 border-2 border-green-500 text-green-600 font-bold py-2 rounded-lg hover:bg-green-50 dark:hover:bg-green-950">
+                        <i class="fa-brands fa-whatsapp fa-lg mr-2"></i>WhatsApp
+                    </button>
+                    <button onclick="gerarPDFIndividual()" class="flex-1 border-2 border-red-400 text-red-500 font-bold py-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-950">
+                        <i class="fa-solid fa-file-pdf fa-lg mr-2"></i>Ficha PDF
+                    </button>
+                </div>
+            </div>
+
+            <div class="card-base bg-white rounded-xl shadow-md p-5 border border-gray-200">
+                <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-3">
+                    <i class="fa-solid fa-layer-group mr-2 text-orange-500"></i>Lote / Grupo
+                    <span class="font-normal text-sm text-gray-400">(Opcional)</span>
+                </h3>
+                <div class="flex gap-2">
+                    <input type="text" id="perfilLote" list="opcoesLotes" class="flex-1 text-lg p-3 rounded border border-gray-400 bg-gray-50" placeholder="Ex: Lote A, Piquete 3..." maxlength="40">
+                    <button onclick="salvarLote()" class="bg-orange-500 text-white font-bold px-4 rounded-lg hover:bg-orange-700">Salvar</button>
+                </div>
+            </div>
+
+            <div class="card-base bg-white rounded-xl shadow-md p-5 border border-gray-200">
+                <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4 border-b pb-2">
+                    <i class="fa-solid fa-baby mr-2 text-jsgreen-700"></i>Nascimento
+                </h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 dark:text-gray-200 font-bold mb-1">Data do Parto</label>
+                        <input type="date" id="partoData" class="w-full text-lg p-3 rounded border border-gray-400 bg-gray-50">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 dark:text-gray-200 font-bold mb-1">Sexo do Bezerro</label>
+                        <select id="partoSexo" class="w-full text-lg p-3 rounded border border-gray-400 bg-gray-50">
+                            <option value="Macho">Macho</option>
+                            <option value="Fêmea">Fêmea</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 dark:text-gray-200 font-bold mb-1">
+                            Observação <span class="font-normal text-sm text-gray-500">(Opcional)</span>
+                        </label>
+                        <input type="text" id="partoObs" class="w-full text-lg p-3 rounded border border-gray-400 bg-gray-50" placeholder="Ex: Parto distócico, bezerro fraco..." maxlength="120">
+                    </div>
+                    <button onclick="salvarParto()" class="w-full bg-jsgreen-700 text-white font-bold py-4 rounded-lg text-lg shadow hover:bg-jsgreen-900">
+                        SALVAR NASCIMENTO
+                    </button>
+                </div>
+            </div>
+
+            <div class="card-base bg-white rounded-xl shadow-md p-5 border border-gray-200">
+                <button onclick="toggleDiagnostico()" class="w-full flex justify-between items-center text-xl font-bold text-gray-800 dark:text-gray-100 hover:text-jsgreen-700 focus:outline-none">
+                    <span><i class="fa-solid fa-stethoscope mr-2 text-blue-600"></i>Lançar Diagnóstico</span>
+                    <i id="iconeSetaDiag" class="fa-solid fa-chevron-down text-gray-400"></i>
+                </button>
+
+                <div id="formDiagnostico" class="escondido mt-4 pt-4 border-t space-y-4">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-gray-700 dark:text-gray-200 font-bold mb-1">Ano</label>
+                            <input type="number" id="diagAno" class="w-full text-lg p-3 rounded border border-gray-400 bg-gray-50 text-center font-bold" min="2000" max="2100">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 dark:text-gray-200 font-bold mb-1">Resultado</label>
+                            <select id="diagSituacao" class="w-full text-lg p-3 rounded border border-gray-400 bg-white font-bold">
+                                <option value="Prenha">Prenha</option>
+                                <option value="Vazia">Vazia</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-700 dark:text-gray-200 font-bold mb-1">
+                            Observação <span class="font-normal text-sm text-gray-500">(Opcional)</span>
+                        </label>
+                        <input type="text" id="diagObs" class="w-full text-lg p-3 rounded border border-gray-400 bg-gray-50" placeholder="Ex: Cisto folicular..." maxlength="120">
+                    </div>
+
+                    <button onclick="salvarDiagnostico()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-lg text-lg shadow hover:bg-blue-800">
+                        SALVAR DIAGNÓSTICO
+                    </button>
+                </div>
+            </div>
+
+            <div class="card-base bg-white rounded-xl shadow-md p-5 border border-gray-200">
+                <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-3">
+                    <i class="fa-solid fa-clock-rotate-left mr-2"></i>Histórico Completo
+                </h3>
+                <div id="perfilHistorico" class="text-sm text-gray-600 dark:text-gray-300 space-y-2"></div>
+
+                <button onclick="excluirMatriz()" class="mt-6 w-full text-red-500 font-bold py-2 hover:bg-red-50 dark:hover:bg-red-950 rounded border border-red-100">
+                    Excluir Animal do Sistema
+                </button>
+            </div>
+
+            <div class="card-base bg-white rounded-xl shadow-md p-5 border border-gray-200">
+                <button onclick="toggleLogs()" class="w-full flex justify-between items-center text-lg font-bold text-gray-800 dark:text-gray-100 hover:text-jsgreen-700 focus:outline-none">
+                    <span><i class="fa-solid fa-shield-halved mr-2 text-gray-500"></i>Log local de alterações</span>
+                    <i id="iconeSetaLogs" class="fa-solid fa-chevron-down text-gray-400"></i>
+                </button>
+                <div id="painelLogs" class="escondido mt-4 pt-4 border-t">
+                    <div id="listaLogs" class="text-xs text-gray-600 dark:text-gray-300 space-y-1"></div>
+                    <button onclick="limparLogs()" class="mt-3 w-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 font-bold py-2 rounded">
+                        Limpar logs locais
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // ============================================================
+        // CONFIGURAÇÃO E ESTADO
+        // ============================================================
+
+        // ============================================================
+        // SUPABASE - SINCRONIZAÇÃO ONLINE (mantém LocalStorage)
+        // ============================================================
+        const SUPABASE_URL = 'https://rmdxjxlhzeevybriywzf.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_IU6_hF0V4xjTIZ5KlCLW9A_quYu8YA9';
+        const supabaseClient = window.supabase
+            ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+            : null;
+
+        let _syncTimer = null;
+        let _sincronizando = false;
+
+        const DB = {
+            plantel: 'fazendaJsPlantelV11',
+            plantelV10: 'fazendaJsPlantelV10',
+            plantelV9: 'fazendaJsPlantelV9',
+            plantelV8: 'fazendaJsPlantelV8',
+            logs: 'fazendaJsLogsV11',
+            tema: 'fazendaJsTemaV11',
+            backupAuto: 'fazendaJsBackupAutoV11'
+        };
+
+        const LIMITES = {
+            brinco: 30,
+            lote: 40,
+            observacao: 120,
+            registrosLog: 300
+        };
+
+        let plantel = [];
+
+        // ============================================================
+        // UTILITÁRIOS DE SEGURANÇA E VALIDAÇÃO
+        // ============================================================
+        function textoSeguro(valor) {
+            return String(valor ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function normalizarTexto(valor, limite = 120) {
+            return String(valor ?? '')
+                .trim()
+                .replace(/\s+/g, ' ')
+                .slice(0, limite);
+        }
+
+        function normalizarBrinco(valor) {
+            return normalizarTexto(valor, LIMITES.brinco).toUpperCase();
+        }
+
+        function normalizarLote(valor) {
+            const lote = normalizarTexto(valor, LIMITES.lote);
+            return lote || '-';
+        }
+
+        function normalizarObs(valor) {
+            const obs = normalizarTexto(valor, LIMITES.observacao);
+            return obs || '-';
+        }
+
+        function encontrarMatriz(brinco) {
+            const alvo = String(brinco ?? '').toUpperCase();
+            return plantel.find(m => String(m.brinco ?? '').toUpperCase() === alvo);
+        }
+
+        function validarBrinco(brinco) {
+            if (!brinco) return 'Digite a identificação da matriz.';
+            if (brinco.length > LIMITES.brinco) return `A identificação deve ter no máximo ${LIMITES.brinco} caracteres.`;
+            return '';
+        }
+
+        function validarAno(ano) {
+            const anoAtual = new Date().getFullYear();
+            const anoNumero = Number(ano);
+
+            if (!Number.isInteger(anoNumero)) return 'Preencha o ano corretamente.';
+            if (anoNumero < 2000) return 'O ano não pode ser inferior a 2000.';
+            if (anoNumero > anoAtual + 1) return `O ano não pode ser superior a ${anoAtual + 1}.`;
+
+            return '';
+        }
+
+        function dataAtualISO() {
+            return new Date().toISOString();
+        }
+
+        function formatarData(dataISO) {
+            if (!dataISO) return '-';
+
+            const partes = String(dataISO).split('-');
+            if (partes.length < 3) return textoSeguro(dataISO);
+
+            return `${partes[2]}/${partes[1]}/${partes[0]}`;
+        }
+
+        function formatarDataHoraBR(iso) {
+            try {
+                return new Date(iso).toLocaleString('pt-BR');
+            } catch {
+                return '-';
+            }
+        }
+
+        function mostrarToast(msg, tipo = 'sucesso') {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+
+            if (tipo === 'sucesso') toast.style.backgroundColor = '#15803d';
+            else if (tipo === 'erro') toast.style.backgroundColor = '#dc2626';
+            else toast.style.backgroundColor = '#f59e0b';
+
+            toast.classList.add('visivel');
+            setTimeout(() => toast.classList.remove('visivel'), 3000);
+        }
+
+        function criarElemento(tag, classes = '', texto = '') {
+            const el = document.createElement(tag);
+            if (classes) el.className = classes;
+            if (texto !== '') el.textContent = texto;
+            return el;
+        }
+
+        // ============================================================
+        // LOG LOCAL E BACKUP AUTOMÁTICO
+        // ============================================================
+        function carregarLogs() {
+            try {
+                const logs = JSON.parse(localStorage.getItem(DB.logs));
+                return Array.isArray(logs) ? logs : [];
+            } catch {
+                return [];
+            }
+        }
+
+        function registrarLog(acao, detalhes = {}) {
+            const logs = carregarLogs();
+
+            logs.unshift({
+                data: dataAtualISO(),
+                acao: String(acao ?? 'Ação'),
+                detalhes
+            });
+
+            localStorage.setItem(DB.logs, JSON.stringify(logs.slice(0, LIMITES.registrosLog)));
+        }
+
+        function fazerBackupAutomatico(motivo = 'Backup automático') {
+            try {
+                const payload = {
+                    versao: 'v11',
+                    geradoEm: dataAtualISO(),
+                    motivo,
+                    plantel
+                };
+                localStorage.setItem(DB.backupAuto, JSON.stringify(payload));
+            } catch {
+                console.warn('Não foi possível gerar backup automático.');
+            }
+        }
+
+        function renderizarLogs() {
+            const div = document.getElementById('listaLogs');
+            div.innerHTML = '';
+
+            const brinco = document.getElementById('perfilBrincoAtual').value;
+            const logs = carregarLogs()
+                .filter(log => !brinco || String(log?.detalhes?.brinco ?? '').toUpperCase() === String(brinco).toUpperCase())
+                .slice(0, 30);
+
+            if (logs.length === 0) {
+                div.textContent = 'Nenhum log local para esta matriz.';
+                return;
+            }
+
+            logs.forEach(log => {
+                const item = criarElemento('div', 'border rounded p-2 bg-gray-50 dark:bg-gray-800');
+                item.textContent = `${formatarDataHoraBR(log.data)} — ${log.acao}`;
+                div.appendChild(item);
+            });
+        }
+
+        function toggleLogs() {
+            const painel = document.getElementById('painelLogs');
+            const icone = document.getElementById('iconeSetaLogs');
+
+            painel.classList.toggle('escondido');
+            icone.className = painel.classList.contains('escondido')
+                ? 'fa-solid fa-chevron-down text-gray-400'
+                : 'fa-solid fa-chevron-up text-jsgreen-700';
+
+            renderizarLogs();
+        }
+
+        function limparLogs() {
+            if (!confirm('Deseja limpar os logs locais? Esta ação não altera os dados do plantel.')) return;
+
+            localStorage.removeItem(DB.logs);
+            renderizarLogs();
+            mostrarToast('Logs locais apagados.', 'aviso');
+        }
+
+        // ============================================================
+        // TEMA
+        // ============================================================
+        function aplicarTemaSalvo() {
+            const tema = localStorage.getItem(DB.tema) || 'claro';
+            const html = document.documentElement;
+            const icone = document.getElementById('iconeTema');
+
+            if (tema === 'escuro') {
+                html.classList.add('dark');
+                if (icone) icone.className = 'fa-solid fa-sun';
+            } else {
+                html.classList.remove('dark');
+                if (icone) icone.className = 'fa-solid fa-moon';
+            }
+        }
+
+        function alternarTema() {
+            const atual = localStorage.getItem(DB.tema) || 'claro';
+            localStorage.setItem(DB.tema, atual === 'escuro' ? 'claro' : 'escuro');
+            aplicarTemaSalvo();
+        }
+
+        // ============================================================
+        // PERSISTÊNCIA LOCAL E MIGRAÇÃO
+        // ============================================================
+        function normalizarPlantel(dados) {
+            if (!Array.isArray(dados)) return [];
+
+            return dados
+                .filter(item => item && typeof item === 'object')
+                .map(item => {
+                    const brinco = normalizarBrinco(item.brinco);
+                    if (!brinco) return null;
+
+                    const historico = Array.isArray(item.historico)
+                        ? item.historico.map(h => ({
+                            ano: String(h?.ano ?? '').slice(0, 4),
+                            situacao: h?.situacao === 'Vazia' ? 'Vazia' : 'Prenha',
+                            obs: normalizarObs(h?.obs)
+                        })).filter(h => h.ano)
+                        : [];
+
+                    const partos = Array.isArray(item.partos)
+                        ? item.partos.map(p => ({
+                            data: String(p?.data ?? ''),
+                            sexo: p?.sexo === 'Fêmea' ? 'Fêmea' : 'Macho',
+                            obs: normalizarObs(p?.obs)
+                        })).filter(p => /^\d{4}-\d{2}-\d{2}$/.test(p.data))
+                        : [];
+
+                    historico.sort((a, b) => Number(b.ano) - Number(a.ano));
+                    partos.sort((a, b) => new Date(b.data) - new Date(a.data));
+
+                    return {
+                        brinco,
+                        lote: normalizarLote(item.lote),
+                        historico,
+                        partos
+                    };
+                })
+                .filter(Boolean);
+        }
+
+        function carregarDados() {
+            const chaves = [DB.plantel, DB.plantelV10, DB.plantelV9, DB.plantelV8];
+
+            for (const chave of chaves) {
+                try {
+                    const dados = JSON.parse(localStorage.getItem(chave));
+                    const normalizados = normalizarPlantel(dados);
+
+                    if (normalizados.length > 0) {
+                        plantel = normalizados;
+                        if (chave !== DB.plantel) {
+                            salvarDados(false);
+                            registrarLog('Migração de dados concluída', { origem: chave });
+                        }
+                        return;
+                    }
+                } catch {
+                    // continua tentando versões antigas
+                }
+            }
+
+            plantel = [];
+        }
+
+        function salvarDados(comLogBackup = true) {
+            try {
+                localStorage.setItem(DB.plantel, JSON.stringify(plantel));
+
+                if (comLogBackup) {
+                    fazerBackupAutomatico('Salvamento local');
+                }
+
+                atualizarDatalistLotes();
+                atualizarFiltroLotes();
+
+                agendarSincronizacaoSupabase();
+            } catch (e) {
+                mostrarToast('Erro ao salvar no LocalStorage. Verifique o espaço do navegador.', 'erro');
+            }
+        }
+
+        function matrizParaSupabase(matriz) {
+            const historico = Array.isArray(matriz.historico) ? matriz.historico : [];
+            const partos = Array.isArray(matriz.partos) ? matriz.partos : [];
+            const statusAtual = historico.length > 0 ? historico[0].situacao : 'Sem Diagnóstico';
+
+            return {
+                numero: String(matriz.brinco || '').toUpperCase(),
+                lote: matriz.lote && matriz.lote !== '-' ? matriz.lote : null,
+                status: statusAtual,
+                obs: '',
+                historico,
+                partos
+            };
+        }
+
+        function supabaseParaMatriz(registro) {
+            return {
+                brinco: normalizarBrinco(registro.numero),
+                lote: normalizarLote(registro.lote),
+                historico: Array.isArray(registro.historico) ? registro.historico : [],
+                partos: Array.isArray(registro.partos) ? registro.partos : []
+            };
+        }
+
+        function mesclarPlantel(local, remoto) {
+            const mapa = new Map();
+
+            local.forEach(m => {
+                if (m && m.brinco) mapa.set(String(m.brinco).toUpperCase(), m);
+            });
+
+            remoto.forEach(m => {
+                if (!m || !m.brinco) return;
+
+                const chave = String(m.brinco).toUpperCase();
+                const existente = mapa.get(chave);
+
+                if (!existente) {
+                    mapa.set(chave, m);
+                    return;
+                }
+
+                const historico = Array.isArray(existente.historico) ? existente.historico : [];
+                const partos = Array.isArray(existente.partos) ? existente.partos : [];
+
+                mapa.set(chave, {
+                    brinco: existente.brinco || m.brinco,
+                    lote: existente.lote && existente.lote !== '-' ? existente.lote : m.lote,
+                    historico: historico.length ? historico : (Array.isArray(m.historico) ? m.historico : []),
+                    partos: partos.length ? partos : (Array.isArray(m.partos) ? m.partos : [])
+                });
+            });
+
+            return normalizarPlantel([...mapa.values()]);
+        }
+
+        function agendarSincronizacaoSupabase() {
+            if (!supabaseClient) return;
+
+            if (_syncTimer) clearTimeout(_syncTimer);
+            _syncTimer = setTimeout(() => sincronizarSupabase(), 800);
+        }
+
+        async function sincronizarSupabase() {
+            if (!supabaseClient || _sincronizando) return;
+
+            _sincronizando = true;
+
+            try {
+                for (const matriz of plantel) {
+                    if (!matriz || !matriz.brinco) continue;
+
+                    const payload = matrizParaSupabase(matriz);
+
+                    const { data: existente, error: erroBusca } = await supabaseClient
+                        .from('matrizes')
+                        .select('id')
+                        .eq('numero', payload.numero)
+                        .maybeSingle();
+
+                    if (erroBusca) {
+                        console.error('Erro ao consultar Supabase:', erroBusca);
+                        continue;
+                    }
+
+                    if (existente && existente.id) {
+                        const { error: erroUpdate } = await supabaseClient
+                            .from('matrizes')
+                            .update(payload)
+                            .eq('id', existente.id);
+
+                        if (erroUpdate) console.error('Erro ao atualizar Supabase:', erroUpdate);
+                    } else {
+                        const { error: erroInsert } = await supabaseClient
+                            .from('matrizes')
+                            .insert([payload]);
+
+                        if (erroInsert) console.error('Erro ao inserir Supabase:', erroInsert);
+                    }
+                }
+
+                console.log('FazendaJS: sincronização Supabase concluída.');
+            } catch (err) {
+                console.error('Falha geral na sincronização Supabase:', err);
+            } finally {
+                _sincronizando = false;
+            }
+        }
+
+        async function carregarDadosSupabase() {
+            if (!supabaseClient) return false;
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('matrizes')
+                    .select('*')
+                    .order('numero', { ascending: true });
+
+                if (error) {
+                    console.error('Erro ao carregar Supabase:', error);
+                    return false;
+                }
+
+                if (!Array.isArray(data) || data.length === 0) {
+                    agendarSincronizacaoSupabase();
+                    return false;
+                }
+
+                const remoto = normalizarPlantel(data.map(supabaseParaMatriz));
+                plantel = mesclarPlantel(plantel, remoto);
+
+                localStorage.setItem(DB.plantel, JSON.stringify(plantel));
+                fazerBackupAutomatico('Carga Supabase');
+
+                return true;
+            } catch (err) {
+                console.error('Falha ao carregar dados do Supabase:', err);
+                return false;
+            }
+        }
+
+        // ============================================================
+        // INICIALIZAÇÃO
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', async () => {
+            aplicarTemaSalvo();
+            carregarDados();
+            renderizarLista();
+            atualizarDatalistLotes();
+            atualizarFiltroLotes();
+
+            const carregouRemoto = await carregarDadosSupabase();
+            if (carregouRemoto) {
+                renderizarLista();
+                atualizarDatalistLotes();
+                atualizarFiltroLotes();
+            }
+        });
+
+        // ============================================================
+        // LOTES DINÂMICOS
+        // ============================================================
+        function obterLotesUnicos() {
+            return [...new Set(plantel.map(m => m.lote))]
+                .filter(l => l && l !== '-')
+                .sort((a, b) => String(a).localeCompare(String(b), 'pt-BR', { sensitivity: 'base' }));
+        }
+
+        function atualizarDatalistLotes() {
+            const datalist = document.getElementById('opcoesLotes');
+            datalist.innerHTML = '';
+
+            obterLotesUnicos().forEach(lote => {
+                const option = document.createElement('option');
+                option.value = lote;
+                datalist.appendChild(option);
+            });
+        }
+
+        function atualizarFiltroLotes() {
+            const select = document.getElementById('filtroLote');
+            if (!select) return;
+
+            const valorAtual = select.value;
+            select.innerHTML = '';
+
+            const todos = document.createElement('option');
+            todos.value = '';
+            todos.textContent = 'Todos os lotes';
+            select.appendChild(todos);
+
+            obterLotesUnicos().forEach(lote => {
+                const option = document.createElement('option');
+                option.value = lote;
+                option.textContent = lote;
+                select.appendChild(option);
+            });
+
+            select.value = valorAtual;
+        }
+
+        function limparFiltros() {
+            document.getElementById('buscaBrinco').value = '';
+            document.getElementById('filtroLote').value = '';
+            filtrarMatrizes();
+        }
+
+        // ============================================================
+        // BACKUP E RESTAURAÇÃO
+        // ============================================================
+        function exportarBackup() {
+            if (plantel.length === 0) {
+                mostrarToast('Não há dados para exportar!', 'aviso');
+                return;
+            }
+
+            const pacote = {
+                sistema: 'Fazenda JS',
+                versao: 'v11',
+                geradoEm: dataAtualISO(),
+                totalMatrizes: plantel.length,
+                plantel
+            };
+
+            const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(pacote, null, 2));
+            const downloadAnchorNode = document.createElement('a');
+
+            downloadAnchorNode.setAttribute('href', dataStr);
+            downloadAnchorNode.setAttribute('download', `FazendaJS_Backup_${new Date().toISOString().slice(0, 10)}.json`);
+
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+
+            registrarLog('Backup exportado', { totalMatrizes: plantel.length });
+            mostrarToast('Backup baixado com sucesso!');
+        }
+
+        function importarDados(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (!file.name.toLowerCase().endsWith('.json')) {
+                mostrarToast('Selecione um arquivo JSON válido.', 'erro');
+                event.target.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                try {
+                    const conteudo = JSON.parse(e.target.result);
+                    const dadosImportados = Array.isArray(conteudo) ? conteudo : conteudo?.plantel;
+                    const normalizados = normalizarPlantel(dadosImportados);
+
+                    if (!normalizados.length) {
+                        mostrarToast('Arquivo sem matrizes válidas para importar.', 'erro');
+                        return;
+                    }
+
+                    if (!confirm(`Importar ${normalizados.length} matriz(es)? Os dados locais atuais serão substituídos.`)) {
+                        return;
+                    }
+
+                    fazerBackupAutomatico('Antes da importação de backup');
+                    plantel = normalizados;
+                    salvarDados();
+
+                    registrarLog('Backup importado', { totalMatrizes: plantel.length });
+                    renderizarLista();
+                    mostrarToast('Dados restaurados com sucesso!');
+                } catch {
+                    mostrarToast('Erro ao ler o arquivo de backup.', 'erro');
+                } finally {
+                    event.target.value = '';
+                }
+            };
+
+            reader.readAsText(file);
+        }
+
+        // ============================================================
+        // BUSCA E CADASTRO
+        // ============================================================
+        let _buscaTimer = null;
+
+        function onBuscaInput() {
+            if (_buscaTimer) clearTimeout(_buscaTimer);
+            _buscaTimer = setTimeout(filtrarMatrizes, 250);
+        }
+
+        function filtrarMatrizes() {
+            const busca = normalizarBrinco(document.getElementById('buscaBrinco').value);
+            const loteSelecionado = document.getElementById('filtroLote')?.value || '';
+
+            const btnNovo = document.getElementById('btnCadastrarNovo');
+            const spanNovo = document.getElementById('numNovoBrinco');
+            const painelLote = document.getElementById('painelLote');
+
+            renderizarLista(busca, loteSelecionado);
+
+            if (busca === '') {
+                btnNovo.classList.remove('escondido');
+                btnNovo.classList.add('opacity-60');
+                spanNovo.textContent = '';
+                painelLote.classList.add('escondido');
+                return;
+            }
+
+            const existe = encontrarMatriz(busca);
+
+            if (existe) {
+                btnNovo.classList.add('escondido');
+                painelLote.classList.add('escondido');
+            } else {
+                btnNovo.classList.remove('escondido');
+                btnNovo.classList.remove('opacity-60');
+                spanNovo.textContent = busca;
+                painelLote.classList.remove('escondido');
+            }
+        }
+
+        function cadastrarMatrizRapido() {
+            const busca = normalizarBrinco(document.getElementById('buscaBrinco').value);
+            const erro = validarBrinco(busca);
+
+            if (erro) {
+                mostrarToast(erro, 'aviso');
+                document.getElementById('buscaBrinco').focus();
+                return;
+            }
+
+            if (encontrarMatriz(busca)) {
+                mostrarToast('Matriz já cadastrada!', 'erro');
+                return;
+            }
+
+            const lote = normalizarLote(document.getElementById('novoLote').value);
+
+            const novaMatriz = {
+                brinco: busca,
+                lote,
+                historico: [],
+                partos: []
+            };
+
+            plantel.push(novaMatriz);
+            salvarDados();
+
+            registrarLog('Matriz cadastrada', { brinco: busca, lote });
+
+            document.getElementById('novoLote').value = '';
+            abrirPerfil(busca);
+            mostrarToast('Matriz cadastrada com sucesso!');
+        }
+
+        // ============================================================
+        // LISTA E RESUMO
+        // ============================================================
+        function obterListaFiltrada(filtro = '', lote = '') {
+            let lista = [...plantel];
+
+            if (filtro) {
+                lista = lista.filter(m => String(m.brinco ?? '').toUpperCase().includes(filtro));
+            }
+
+            if (lote) {
+                lista = lista.filter(m => String(m.lote ?? '') === lote);
+            }
+
+            return lista.sort((a, b) =>
+                String(a.brinco).localeCompare(String(b.brinco), undefined, {
+                    numeric: true,
+                    sensitivity: 'base'
+                })
+            );
+        }
+
+        function renderizarResumo(listaFiltrada) {
+            const total = listaFiltrada.length;
+            let prenhas = 0;
+            let vazias = 0;
+
+            listaFiltrada.forEach(m => {
+                if (m.historico && m.historico.length > 0) {
+                    if (m.historico[0].situacao === 'Prenha') prenhas++;
+                    if (m.historico[0].situacao === 'Vazia') vazias++;
+                }
+            });
+
+            const resumo = document.getElementById('resumoPlantel');
+            resumo.innerHTML = '';
+
+            const cards = [
+                { numero: total, rotulo: 'Total', classe: 'text-gray-800 dark:text-white', borda: '' },
+                { numero: prenhas, rotulo: 'Prenhas', classe: 'text-green-700', borda: 'border-green-200' },
+                { numero: vazias, rotulo: 'Vazias', classe: 'text-red-600', borda: 'border-red-200' }
+            ];
+
+            cards.forEach(card => {
+                const div = criarElemento('div', `card-base bg-white rounded-xl p-3 text-center shadow-sm border ${card.borda}`);
+                const pNumero = criarElemento('p', `text-2xl font-black ${card.classe}`, card.numero);
+                const pRotulo = criarElemento('p', 'text-xs text-gray-500 dark:text-gray-300 font-bold uppercase', card.rotulo);
+
+                div.appendChild(pNumero);
+                div.appendChild(pRotulo);
+                resumo.appendChild(div);
+            });
+        }
+
+        function renderizarLista(filtro = '', lote = '') {
+            const lista = obterListaFiltrada(filtro, lote);
+            renderizarResumo(lista);
+
+            const ul = document.getElementById('listaContatos');
+            ul.innerHTML = '';
+
+            if (lista.length === 0 && !filtro && !lote) {
+                const li = criarElemento('li', 'text-center text-gray-400 mt-6 italic', 'Nenhuma matriz cadastrada. Digite o número acima para começar.');
+                ul.appendChild(li);
+                return;
+            }
+
+            if (lista.length === 0) {
+                const li = criarElemento('li', 'text-center text-gray-400 mt-6 italic', 'Nenhuma matriz encontrada com os filtros informados.');
+                ul.appendChild(li);
+                return;
+            }
+
+            const fragmento = document.createDocumentFragment();
+
+            lista.forEach(m => {
+                const ultDiag = (m.historico && m.historico.length > 0) ? m.historico[0].situacao : 'Sem Diag.';
+
+                let corStatus = 'bg-gray-200 text-gray-700';
+                if (ultDiag === 'Prenha') corStatus = 'bg-green-100 text-green-800';
+                if (ultDiag === 'Vazia') corStatus = 'bg-red-100 text-red-800';
+
+                const li = criarElemento(
+                    'li',
+                    'card-base bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex justify-between items-center cursor-pointer hover:bg-green-50 dark:hover:bg-gray-800 transition-colors'
+                );
+
+                li.onclick = () => abrirPerfil(m.brinco);
+
+                const left = criarElemento('div', 'flex items-center min-w-0');
+
+                const avatar = criarElemento(
+                    'div',
+                    'bg-jsgreen-900 text-white rounded-full min-w-[3rem] h-12 px-2 flex items-center justify-center font-bold text-lg shadow overflow-hidden'
+                );
+
+                const spanAvatar = criarElemento('span', 'truncate', m.brinco);
+                avatar.appendChild(spanAvatar);
+
+                const info = criarElemento('div', 'ml-4 truncate max-w-[170px] sm:max-w-[280px]');
+                const tituloLinha = criarElemento('div', 'flex items-center min-w-0');
+                const h3 = criarElemento('h3', 'font-bold text-gray-900 dark:text-white text-lg truncate', m.brinco);
+
+                tituloLinha.appendChild(h3);
+
+                if (m.lote && m.lote !== '-') {
+                    const loteBadge = criarElemento('span', 'ml-2 text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded font-bold truncate max-w-[100px]', m.lote);
+                    tituloLinha.appendChild(loteBadge);
+                }
+
+                const status = criarElemento('span', `text-xs px-2 py-0.5 rounded font-bold ${corStatus} uppercase`, ultDiag);
+
+                info.appendChild(tituloLinha);
+                info.appendChild(status);
+
+                left.appendChild(avatar);
+                left.appendChild(info);
+
+                const icon = criarElemento('i', 'fa-solid fa-chevron-right text-gray-400');
+
+                li.appendChild(left);
+                li.appendChild(icon);
+                fragmento.appendChild(li);
+            });
+
+            ul.appendChild(fragmento);
+        }
+
+        // ============================================================
+        // TELAS E PERFIL
+        // ============================================================
+        function mostrarTela(tela) {
+            if (tela === 'lista') {
+                document.getElementById('tela-lista').classList.remove('escondido');
+                document.getElementById('tela-perfil').classList.add('escondido');
+                document.getElementById('btnVoltar').classList.add('escondido');
+                document.getElementById('acoesHeader').classList.remove('escondido');
+
+                document.getElementById('tituloHeader').innerHTML = '<i class="fa-solid fa-cow mr-2"></i>Fazenda JS <span class="text-xs font-normal text-gray-300 ml-1">v11</span>';
+
+                document.getElementById('buscaBrinco').value = '';
+                filtrarMatrizes();
+                return;
+            }
+
+            if (tela === 'perfil') {
+                document.getElementById('tela-lista').classList.add('escondido');
+                document.getElementById('tela-perfil').classList.remove('escondido');
+                document.getElementById('btnVoltar').classList.remove('escondido');
+                document.getElementById('acoesHeader').classList.add('escondido');
+
+                document.getElementById('tituloHeader').textContent = 'Ficha do Animal';
+                document.getElementById('partoData').value = '';
+                document.getElementById('partoObs').value = '';
+                document.getElementById('diagAno').value = new Date().getFullYear();
+                document.getElementById('diagObs').value = '';
+                document.getElementById('formDiagnostico').classList.add('escondido');
+                document.getElementById('iconeSetaDiag').className = 'fa-solid fa-chevron-down text-gray-400';
+                document.getElementById('painelLogs').classList.add('escondido');
+                document.getElementById('iconeSetaLogs').className = 'fa-solid fa-chevron-down text-gray-400';
+            }
+        }
+
+        function abrirPerfil(brinco) {
+            const matriz = encontrarMatriz(brinco);
+
+            if (!matriz) {
+                mostrarToast('Matriz não localizada.', 'erro');
+                mostrarTela('lista');
+                return;
+            }
+
+            document.getElementById('perfilBrincoAtual').value = matriz.brinco;
+            document.getElementById('perfilNome').textContent = matriz.brinco;
+            document.getElementById('perfilLote').value = (matriz.lote && matriz.lote !== '-') ? matriz.lote : '';
+
+            const badge = document.getElementById('perfilLoteBadge');
+
+            if (matriz.lote && matriz.lote !== '-') {
+                badge.textContent = '🏷️ ' + matriz.lote;
+                badge.classList.remove('escondido');
+            } else {
+                badge.textContent = '';
+                badge.classList.add('escondido');
+            }
+
+            const ultDiag = (matriz.historico && matriz.historico.length > 0) ? matriz.historico[0].situacao : 'Sem Diagnóstico';
+            const statusDiv = document.getElementById('perfilUltimoStatus');
+
+            statusDiv.textContent = ultDiag;
+            statusDiv.className = `inline-block px-4 py-1 rounded-full text-sm font-bold mt-1 ${
+                ultDiag === 'Prenha'
+                    ? 'bg-green-200 text-green-900'
+                    : ultDiag === 'Vazia'
+                        ? 'bg-red-200 text-red-900'
+                        : 'bg-gray-200 text-gray-700'
+            }`;
+
+            atualizarHistoricoPerfil(matriz);
+            mostrarTela('perfil');
+        }
+
+        function atualizarHistoricoPerfil(matriz) {
+            const div = document.getElementById('perfilHistorico');
+            div.innerHTML = '';
+
+            if ((!matriz.historico || matriz.historico.length === 0) && (!matriz.partos || matriz.partos.length === 0)) {
+                const vazio = criarElemento('p', 'italic text-gray-400', 'Nenhum registro ainda.');
+                div.appendChild(vazio);
+                return;
+            }
+
+            if (matriz.partos && matriz.partos.length > 0) {
+                const titulo = criarElemento('p', 'font-bold text-gray-800 dark:text-gray-100 mt-2', 'Partos Registrados:');
+                div.appendChild(titulo);
+
+                matriz.partos.forEach(p => {
+                    const item = criarElemento('div', 'bg-gray-50 dark:bg-gray-800 border p-2 rounded mb-1 border-l-4 border-l-jsgreen-500');
+                    const linha = criarElemento('div', '', `Nasceu ${p.sexo} em ${formatarData(p.data)}`);
+                    item.appendChild(linha);
+
+                    if (p.obs && p.obs !== '-') {
+                        const obs = criarElemento('span', 'text-xs text-gray-500 dark:text-gray-300 italic', `Obs: ${p.obs}`);
+                        item.appendChild(obs);
+                    }
+
+                    div.appendChild(item);
+                });
+            }
+
+            if (matriz.historico && matriz.historico.length > 0) {
+                const titulo = criarElemento('p', 'font-bold text-gray-800 dark:text-gray-100 mt-4', 'Diagnósticos:');
+                div.appendChild(titulo);
+
+                matriz.historico.forEach(h => {
+                    const cor = h.situacao === 'Prenha' ? 'border-l-green-500' : 'border-l-red-500';
+                    const item = criarElemento('div', `bg-gray-50 dark:bg-gray-800 border p-2 rounded mb-1 border-l-4 ${cor}`);
+                    const linha = criarElemento('div', '', `Ano ${h.ano}: ${h.situacao}`);
+                    item.appendChild(linha);
+
+                    if (h.obs && h.obs !== '-') {
+                        const obs = criarElemento('span', 'text-xs text-gray-500 dark:text-gray-300 italic', `Obs: ${h.obs}`);
+                        item.appendChild(obs);
+                    }
+
+                    div.appendChild(item);
+                });
+            }
+        }
+
+        // ============================================================
+        // LOTE, PARTO E DIAGNÓSTICO
+        // ============================================================
+        function salvarLote() {
+            const brinco = document.getElementById('perfilBrincoAtual').value;
+            const lote = normalizarLote(document.getElementById('perfilLote').value);
+            const matriz = encontrarMatriz(brinco);
+
+            if (!matriz) {
+                mostrarToast('Matriz não localizada.', 'erro');
+                return;
+            }
+
+            matriz.lote = lote;
+            salvarDados();
+
+            registrarLog('Lote atualizado', { brinco, lote });
+            abrirPerfil(brinco);
+            mostrarToast('Lote atualizado com sucesso!');
+        }
+
+        function salvarParto() {
+            const brinco = document.getElementById('perfilBrincoAtual').value;
+            const data = document.getElementById('partoData').value;
+            const sexo = document.getElementById('partoSexo').value;
+            const obs = normalizarObs(document.getElementById('partoObs').value);
+
+            if (!data) {
+                mostrarToast('Selecione a data do parto!', 'aviso');
+                return;
+            }
+
+            const hoje = new Date();
+            hoje.setHours(0, 0, 0, 0);
+
+            const dataEscolhida = new Date(data + 'T00:00:00');
+
+            if (Number.isNaN(dataEscolhida.getTime())) {
+                mostrarToast('Data inválida.', 'erro');
+                return;
+            }
+
+            if (dataEscolhida > hoje) {
+                mostrarToast('A data não pode estar no futuro!', 'erro');
+                return;
+            }
+
+            const matriz = encontrarMatriz(brinco);
+
+            if (!matriz) {
+                mostrarToast('Matriz não localizada.', 'erro');
+                return;
+            }
+
+            if (!Array.isArray(matriz.partos)) matriz.partos = [];
+
+            matriz.partos.push({ data, sexo, obs });
+            matriz.partos.sort((a, b) => new Date(b.data) - new Date(a.data));
+
+            salvarDados();
+            registrarLog('Nascimento registrado', { brinco, data, sexo });
+
+            document.getElementById('partoData').value = '';
+            document.getElementById('partoObs').value = '';
+
+            atualizarHistoricoPerfil(matriz);
+            abrirPerfil(brinco);
+            mostrarToast('Nascimento salvo!');
+        }
+
+        function toggleDiagnostico() {
+            const form = document.getElementById('formDiagnostico');
+            const icone = document.getElementById('iconeSetaDiag');
+
+            form.classList.toggle('escondido');
+            icone.className = form.classList.contains('escondido')
+                ? 'fa-solid fa-chevron-down text-gray-400'
+                : 'fa-solid fa-chevron-up text-blue-600';
+        }
+
+        function salvarDiagnostico() {
+            const brinco = document.getElementById('perfilBrincoAtual').value;
+            const ano = String(document.getElementById('diagAno').value || '').trim();
+            const situacao = document.getElementById('diagSituacao').value;
+            const obs = normalizarObs(document.getElementById('diagObs').value);
+
+            const erroAno = validarAno(ano);
+            if (erroAno) {
+                mostrarToast(erroAno, 'aviso');
+                return;
+            }
+
+            const matriz = encontrarMatriz(brinco);
+
+            if (!matriz) {
+                mostrarToast('Matriz não localizada.', 'erro');
+                return;
+            }
+
+            if (!Array.isArray(matriz.historico)) matriz.historico = [];
+
+            matriz.historico = matriz.historico.filter(h => String(h.ano) !== String(ano));
+            matriz.historico.push({ ano, situacao, obs });
+            matriz.historico.sort((a, b) => Number(b.ano) - Number(a.ano));
+
+            salvarDados();
+            registrarLog('Diagnóstico registrado', { brinco, ano, situacao });
+
+            toggleDiagnostico();
+            abrirPerfil(brinco);
+            mostrarToast('Diagnóstico salvo!');
+        }
+
+        function excluirMatriz() {
+            const brinco = document.getElementById('perfilBrincoAtual').value;
+            const matriz = encontrarMatriz(brinco);
+
+            if (!matriz) {
+                mostrarToast('Matriz não localizada.', 'erro');
+                mostrarTela('lista');
+                return;
+            }
+
+            if (confirm(`Apagar Animal ${brinco}? Esta ação não pode ser desfeita.`)) {
+                fazerBackupAutomatico('Antes da exclusão de matriz');
+
+                plantel = plantel.filter(m => String(m.brinco).toUpperCase() !== String(brinco).toUpperCase());
+
+                salvarDados();
+                registrarLog('Matriz excluída', { brinco });
+
+                mostrarTela('lista');
+                mostrarToast('Animal excluído.', 'aviso');
+            }
+        }
+
+        // ============================================================
+        // WHATSAPP E PDF
+        // ============================================================
+        function enviarWhatsAppPerfil() {
+            const brinco = document.getElementById('perfilBrincoAtual').value;
+            const m = encontrarMatriz(brinco);
+
+            if (!m) {
+                mostrarToast('Matriz não localizada.', 'erro');
+                return;
+            }
+
+            const ultParto = (m.partos && m.partos.length > 0) ? formatarData(m.partos[0].data) : 'Sem registro.';
+            const loteInfo = (m.lote && m.lote !== '-') ? `🏷️ *Lote:* ${m.lote}\n` : '';
+
+            let partosTxt = 'Sem registros.';
+            if (m.partos && m.partos.length > 0) {
+                partosTxt = m.partos.map(p => {
+                    let txt = `🍼 ${formatarData(p.data)} - ${p.sexo === 'Macho' ? '🐂' : '🐄'} ${p.sexo}`;
+                    if (p.obs && p.obs !== '-') txt += ` _(Obs: ${p.obs})_`;
+                    return txt;
+                }).join('\n');
+            }
+
+            let histTxt = 'Sem registros.';
+            if (m.historico && m.historico.length > 0) {
+                histTxt = m.historico.map(h => {
+                    let txt = `${h.situacao === 'Prenha' ? '✅' : '❌'} *${h.ano}:* ${h.situacao}`;
+                    if (h.obs && h.obs !== '-') txt += ` _(Obs: ${h.obs})_`;
+                    return txt;
+                }).join('\n');
+            }
+
+            const msg =
+                `📄 *FICHA DE MATRIZ - FAZENDA JS*\n\n` +
+                `🐄 *Identificação:* ${m.brinco}\n` +
+                `${loteInfo}` +
+                `⏳ *Último Parto:* ${ultParto}\n\n` +
+                `📋 *Registro de Partos:*\n${partosTxt}\n\n` +
+                `📊 *Diagnósticos de Gestação:*\n${histTxt}`;
+
+            registrarLog('Ficha enviada via WhatsApp', { brinco: m.brinco });
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        function gerarPDFGeral() {
+            if (!window.jspdf || !window.jspdf.jsPDF) {
+                mostrarToast('Biblioteca jsPDF não carregada.', 'erro');
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFontSize(16);
+            doc.setTextColor(20, 83, 45);
+            doc.text('Fazenda JS - Plantel Geral', 14, 15);
+
+            doc.setFontSize(10);
+            doc.setTextColor(100);
+            doc.text(`Gerado em: ${new Date().toLocaleDateString('pt-BR')}`, 14, 22);
+
+            const rows = plantel.map(m => [
+                String(m.brinco ?? '-'),
+                (m.lote && m.lote !== '-') ? String(m.lote) : '-',
+                (m.partos && m.partos.length) ? m.partos.length : 0,
+                (m.partos && m.partos.length > 0) ? formatarData(m.partos[0].data) : '-',
+                (m.historico && m.historico.length > 0) ? m.historico[0].situacao : 'Sem Diag.'
+            ]);
+
+            doc.autoTable({
+                head: [['Identificação', 'Lote', 'Qtd. Partos', 'Último Parto', 'Status Atual']],
+                body: rows,
+                startY: 28,
+                headStyles: { fillColor: [20, 83, 45] },
+                styles: { fontSize: 9, cellPadding: 3 },
+                margin: { top: 15, left: 10, right: 10 }
+            });
+
+            registrarLog('PDF geral gerado', { totalMatrizes: plantel.length });
+            doc.save(`FazendaJS_Geral_${new Date().toISOString().slice(0, 10)}.pdf`);
+        }
+
+        function gerarPDFIndividual() {
+            if (!window.jspdf || !window.jspdf.jsPDF) {
+                mostrarToast('Biblioteca jsPDF não carregada.', 'erro');
+                return;
+            }
+
+            const brinco = document.getElementById('perfilBrincoAtual').value;
+            const m = encontrarMatriz(brinco);
+
+            if (!m) {
+                mostrarToast('Matriz não localizada.', 'erro');
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFontSize(18);
+            doc.setTextColor(20, 83, 45);
+            doc.text(`Ficha da Matriz: ${m.brinco}`, 14, 18);
+
+            doc.setFontSize(11);
+            doc.setTextColor(80);
+            doc.text(`Lote: ${(m.lote && m.lote !== '-') ? m.lote : 'Não informado'}`, 14, 27);
+            doc.text(`Gerado em: ${new Date().toLocaleDateString('pt-BR')}`, 14, 34);
+
+            let yPos = 44;
+
+            doc.setFontSize(13);
+            doc.setTextColor(20, 83, 45);
+            doc.text('Partos Registrados', 14, yPos);
+            yPos += 4;
+
+            if (m.partos && m.partos.length > 0) {
+                doc.autoTable({
+                    head: [['Data', 'Sexo', 'Observação']],
+                    body: m.partos.map(p => [formatarData(p.data), p.sexo, p.obs !== '-' ? p.obs : '']),
+                    startY: yPos,
+                    headStyles: { fillColor: [20, 83, 45] },
+                    styles: { fontSize: 9, cellPadding: 3 },
+                    margin: { top: 15, left: 10, right: 10 }
+                });
+                yPos = doc.lastAutoTable.finalY + 10;
+            } else {
+                doc.setFontSize(10);
+                doc.setTextColor(150);
+                doc.text('Sem registros de parto.', 14, yPos + 6);
+                yPos += 16;
+            }
+
+            doc.setFontSize(13);
+            doc.setTextColor(20, 83, 45);
+            doc.text('Diagnósticos de Gestação', 14, yPos);
+            yPos += 4;
+
+            if (m.historico && m.historico.length > 0) {
+                doc.autoTable({
+                    head: [['Ano', 'Resultado', 'Observação']],
+                    body: m.historico.map(h => [h.ano, h.situacao, h.obs !== '-' ? h.obs : '']),
+                    startY: yPos,
+                    headStyles: { fillColor: [37, 99, 235] },
+                    styles: { fontSize: 9, cellPadding: 3 },
+                    margin: { top: 15, left: 10, right: 10 }
+                });
+            } else {
+                doc.setFontSize(10);
+                doc.setTextColor(150);
+                doc.text('Sem diagnósticos registrados.', 14, yPos + 6);
+            }
+
+            registrarLog('PDF individual gerado', { brinco: m.brinco });
+            doc.save(`FazendaJS_${m.brinco}_${new Date().toISOString().slice(0, 10)}.pdf`);
+        }
+    </script>
 </body>
 </html>
