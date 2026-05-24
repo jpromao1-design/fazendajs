@@ -1,33 +1,25 @@
-const CACHE_NAME = 'fazendajs-v12-app';
-const APP_SHELL = [
+const CACHE_NAME = 'fazenda-js-v11';
+
+const urlsToCache = [
   './',
   './index.html',
-  './assets/css/style.css',
-  './assets/js/app.js',
   './manifest.json',
   './assets/img/icon-192.png',
   './assets/img/icon-512.png'
 ];
 
 self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)));
-  self.skipWaiting();
-});
-
-self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))))
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(urlsToCache))
   );
-  self.clients.claim();
 });
 
 self.addEventListener('fetch', event => {
-  if (event.request.method !== 'GET') return;
   event.respondWith(
-    caches.match(event.request).then(cached => {
-      return cached || fetch(event.request).then(response => {
-        return response;
-      }).catch(() => caches.match('./index.html'));
-    })
+    caches.match(event.request)
+      .then(response => {
+        return response || fetch(event.request);
+      })
   );
 });
