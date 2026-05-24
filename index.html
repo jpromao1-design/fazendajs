@@ -753,6 +753,36 @@ href="./assets/img/icon-192.png">
 
                 console.log('FazendaJS: sincronização Supabase concluída.');
             } catch (err) {
+                // =====================================================
+// REMOVER REGISTROS APAGADOS LOCALMENTE
+// =====================================================
+
+const { data: registrosRemotos } = await supabaseClient
+    .from('matrizes')
+    .select('numero');
+
+if (Array.isArray(registrosRemotos)) {
+
+    for (const remoto of registrosRemotos) {
+
+        const existeLocal =
+            plantel.find(m =>
+                String(m.brinco).toUpperCase() ===
+                String(remoto.numero).toUpperCase()
+            );
+
+        if (!existeLocal) {
+
+            await supabaseClient
+                .from('matrizes')
+                .delete()
+                .eq('numero', remoto.numero);
+
+        }
+
+    }
+
+}
                 console.error('Falha geral na sincronização Supabase:', err);
             } finally {
                 _sincronizando = false;
