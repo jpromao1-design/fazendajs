@@ -1,166 +1,764 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-<meta charset="UTF-8" />
 
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0"/>
+    <meta charset="UTF-8">
 
-<title>Fazenda JS</title>
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-<link rel="manifest" href="manifest.json" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
 
-<meta name="theme-color" content="#16a34a"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-<link rel="stylesheet"
-href="./assets/css/style.css"/>
+    <meta name="theme-color" content="#14532d">
 
-<script src="https://cdn.tailwindcss.com"></script>
+    <title>Fazenda JS - Gestão Fácil v11</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- TAILWIND -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- SUPABASE -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+    <!-- ICONES -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+
+        tailwind.config = {
+
+            darkMode: 'class',
+
+            theme: {
+
+                extend: {
+
+                    colors: {
+
+                        jsgreen: {
+
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            700: '#15803d',
+                            900: '#14532d'
+                        }
+                    }
+                }
+            }
+        }
+
+    </script>
+
+    <style>
+
+        body {
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #020617 0%,
+                    #0f172a 100%
+                );
+
+            color: white;
+
+            min-height: 100vh;
+        }
+
+        .card-base {
+
+            background:
+                rgba(15, 23, 42, 0.75);
+
+            border:
+                1px solid rgba(255,255,255,0.06);
+
+            backdrop-filter:
+                blur(14px);
+
+            border-radius: 24px;
+        }
+
+        .input-gigante {
+
+            font-size: 1.15rem;
+
+            padding: 1rem;
+
+            text-align: center;
+
+            font-weight: bold;
+
+            text-transform: uppercase;
+
+            background:
+                rgba(255,255,255,0.04);
+
+            border:
+                1px solid rgba(255,255,255,0.08);
+
+            color: white;
+        }
+
+        .input-gigante::placeholder {
+
+            color:
+                rgba(255,255,255,0.45);
+        }
+
+        .escondido {
+
+            display: none !important;
+        }
+
+        #toast {
+
+            position: fixed;
+
+            bottom: 1.5rem;
+
+            left: 50%;
+
+            transform: translateX(-50%);
+
+            padding: 0.9rem 1.5rem;
+
+            border-radius: 16px;
+
+            font-weight: bold;
+
+            color: white;
+
+            z-index: 9999;
+
+            opacity: 0;
+
+            transition: opacity 0.3s;
+
+            pointer-events: none;
+
+            white-space: nowrap;
+
+            box-shadow:
+                0 8px 30px rgba(0,0,0,0.35);
+
+            max-width: 92vw;
+
+            overflow: hidden;
+
+            text-overflow: ellipsis;
+        }
+
+        #toast.visivel {
+
+            opacity: 1;
+        }
+
+        .glass-btn {
+
+            background:
+                rgba(255,255,255,0.08);
+
+            border:
+                1px solid rgba(255,255,255,0.08);
+
+            backdrop-filter:
+                blur(10px);
+
+            transition: 0.25s;
+        }
+
+        .glass-btn:hover {
+
+            transform:
+                translateY(-2px);
+
+            background:
+                rgba(255,255,255,0.14);
+        }
+
+        .header-gradient {
+
+            background:
+                linear-gradient(
+                    90deg,
+                    rgba(20,83,45,0.92),
+                    rgba(21,128,61,0.92)
+                );
+
+            backdrop-filter:
+                blur(10px);
+        }
+
+        .menu-bottom {
+
+            position: fixed;
+
+            bottom: 0;
+
+            left: 0;
+
+            width: 100%;
+
+            background:
+                rgba(15,23,42,0.92);
+
+            backdrop-filter:
+                blur(18px);
+
+            border-top:
+                1px solid rgba(255,255,255,0.08);
+
+            display: flex;
+
+            justify-content: space-around;
+
+            padding: 0.75rem 0;
+
+            z-index: 999;
+        }
+
+        .menu-item {
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            font-size: 0.72rem;
+
+            color:
+                rgba(255,255,255,0.65);
+        }
+
+        .menu-item i {
+
+            font-size: 1.15rem;
+
+            margin-bottom: 0.25rem;
+        }
+
+        .menu-item.active {
+
+            color: #22c55e;
+        }
+
+        .card-hover {
+
+            transition: 0.25s;
+        }
+
+        .card-hover:hover {
+
+            transform:
+                translateY(-2px);
+
+            border-color:
+                rgba(34,197,94,0.45);
+        }
+
+        .status-pill {
+
+            padding:
+                0.35rem 0.75rem;
+
+            border-radius:
+                999px;
+
+            font-size:
+                0.72rem;
+
+            font-weight:
+                bold;
+
+            text-transform:
+                uppercase;
+        }
+
+        .status-prenha {
+
+            background:
+                rgba(34,197,94,0.18);
+
+            color:
+                #4ade80;
+        }
+
+        .status-vazia {
+
+            background:
+                rgba(239,68,68,0.18);
+
+            color:
+                #f87171;
+        }
+
+        .status-neutro {
+
+            background:
+                rgba(255,255,255,0.08);
+
+            color:
+                rgba(255,255,255,0.7);
+        }
+
+        .dark input,
+        .dark select,
+        .dark textarea {
+
+            background:
+                rgba(255,255,255,0.04) !important;
+
+            color:
+                white !important;
+
+            border-color:
+                rgba(255,255,255,0.08) !important;
+        }
+
+        .modal-overlay {
+
+            position: fixed;
+
+            inset: 0;
+
+            background:
+                rgba(0,0,0,0.6);
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            z-index: 99999;
+
+            padding: 1rem;
+        }
+
+        .modal-box {
+
+            width: 100%;
+
+            max-width: 430px;
+
+            background:
+                rgba(15,23,42,0.95);
+
+            border:
+                1px solid rgba(255,255,255,0.08);
+
+            backdrop-filter:
+                blur(18px);
+
+            border-radius: 28px;
+
+            padding: 1.5rem;
+        }
+
+        .modal-input {
+
+            width: 100%;
+
+            padding: 1rem;
+
+            border-radius: 18px;
+
+            margin-bottom: 1rem;
+
+            background:
+                rgba(255,255,255,0.04);
+
+            border:
+                1px solid rgba(255,255,255,0.08);
+
+            color: white;
+        }
+
+        .btn-primary {
+
+            width: 100%;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #15803d,
+                    #22c55e
+                );
+
+            padding: 1rem;
+
+            border-radius: 18px;
+
+            font-weight: bold;
+        }
+
+    </style>
 
 </head>
 
-<body>
+<body class="font-sans transition-colors">
 
-<header class="topbar">
+    <!-- TOAST -->
+    <div id="toast"></div>
 
-<div class="logo-area">
+    <!-- DATALIST -->
+    <datalist id="opcoesLotes"></datalist>
 
-<div class="logo-box">
-🐄
-</div>
+    <!-- HEADER -->
+    <header class="header-gradient p-4 shadow-lg sticky top-0 z-50 flex justify-between items-center">
 
-<div>
-<h1>Fazenda JS</h1>
-<span>Gestão Inteligente v12</span>
-</div>
+        <div class="flex items-center min-w-0">
 
-</div>
+            <button id="btnVoltar"
+                onclick="mostrarTela('lista')"
+                class="escondido mr-3 text-white">
 
-<div class="top-actions">
+                <i class="fa-solid fa-arrow-left fa-xl"></i>
 
-<button class="icon-btn">🌙</button>
+            </button>
 
-<button class="icon-btn">☁️</button>
+            <h1 id="tituloHeader"
+                class="text-xl font-black truncate">
 
-<button class="icon-btn">⬇️</button>
+                🐄 Fazenda JS
 
-<button class="pdf-btn">PDF</button>
+                <span class="text-xs font-normal text-green-200 ml-1">
+                    v11
+                </span>
 
-</div>
+            </h1>
 
-</header>
+        </div>
 
-<main class="container-app">
+        <div id="acoesHeader"
+            class="flex gap-2 shrink-0">
 
-<section class="glass-card">
+            <input type="file"
+                id="inputImportar"
+                class="escondido"
+                accept=".json,application/json"
+                onchange="importarDados(event)">
 
-<input
-id="numeroMatriz"
-type="text"
-placeholder="DIGITE O NÚMERO OU NOME..."
-class="input-main"
-/>
+            <button onclick="alternarTema()"
+                class="glass-btn px-3 py-2 rounded-xl">
 
-<input
-id="loteMatriz"
-type="text"
-placeholder="Lote (Opcional)"
-class="input-main"
-/>
+                <i id="iconeTema"
+                    class="fa-solid fa-moon"></i>
 
-<button
-id="btnCadastrar"
-class="btn-main"
->
-➕ Cadastrar Matriz
-</button>
+            </button>
 
-</section>
+            <button onclick="document.getElementById('inputImportar').click()"
+                class="glass-btn px-3 py-2 rounded-xl">
 
-<section class="glass-card filtro-card">
+                <i class="fa-solid fa-upload"></i>
 
-<select
-id="filtroLote"
-class="select-main"
->
-<option value="todos">
-Todos os lotes
-</option>
-</select>
+            </button>
 
-<button
-onclick="renderizarMatrizes()"
-class="btn-clear"
->
-Limpar
-</button>
+            <button onclick="exportarBackup()"
+                class="glass-btn px-3 py-2 rounded-xl">
 
-</section>
+                <i class="fa-solid fa-download"></i>
 
-<section class="stats-grid">
+            </button>
 
-<div class="stat-card">
-<h2 id="totalBadge">0</h2>
-<p>TOTAL</p>
-</div>
+            <button onclick="gerarPDFGeral()"
+                class="bg-white text-jsgreen-900 px-3 py-2 rounded-xl font-bold shadow">
 
-<div class="stat-card">
-<h2
-id="prenhaBadge"
-class="green"
->
-0
-</h2>
-<p>PRENHAS</p>
-</div>
+                PDF
 
-<div class="stat-card">
-<h2
-id="vaziaBadge"
-class="red"
->
-0
-</h2>
-<p>VAZIAS</p>
-</div>
+            </button>
 
-</section>
+        </div>
 
-<section
-id="listaMatrizes"
-class="lista-matrizes"
->
-</section>
+    </header>
 
-</main>
+    <!-- MAIN -->
+    <main class="max-w-xl mx-auto p-4 mt-2 pb-28">
 
-<nav class="bottom-nav">
+        <!-- TELA LISTA -->
+        <div id="tela-lista">
 
-<button class="active">
-🏠
-<span>Início</span>
-</button>
+            <!-- BUSCA -->
+            <div class="card-base p-4 shadow-lg mb-4 border border-green-500/20">
 
-<button>
-📊
-<span>Relatórios</span>
-</button>
+                <label class="block text-gray-200 font-bold mb-2 text-center text-lg">
 
-<button>
-☁️
-<span>Sync</span>
-</button>
+                    Buscar ou Cadastrar Matriz
 
-<button>
-⚙️
-<span>Config</span>
-</button>
+                </label>
 
-</nav>
+                <input
+                    type="text"
+                    id="buscaBrinco"
+                    oninput="onBuscaInput()"
+                    class="input-gigante w-full rounded-2xl"
+                    placeholder="Digite o número ou nome..."
+                    autocapitalize="characters"
+                    maxlength="30"
+                    autocomplete="off">
 
-<script src="./assets/js/app.js"></script>
+                <div id="painelLote"
+                    class="escondido mt-3 border-t border-white/10 pt-3">
+
+                    <label class="block text-gray-300 font-bold mb-1 text-sm">
+
+                        Lote Inicial
+
+                    </label>
+
+                    <input
+                        type="text"
+                        id="novoLote"
+                        list="opcoesLotes"
+                        class="w-full text-base p-3 rounded-2xl border border-white/10 bg-white/5"
+                        placeholder="Ex: Lote A">
+
+                </div>
+
+                <button id="btnCadastrarNovo"
+                    onclick="cadastrarMatrizRapido()"
+                    class="btn-primary mt-3">
+
+                    ➕ Cadastrar Matriz
+                    <span id="numNovoBrinco"></span>
+
+                </button>
+
+            </div>
+
+            <!-- FILTRO -->
+            <div class="card-base rounded-3xl shadow p-3 mb-4">
+
+                <label class="block text-gray-300 font-bold mb-2 text-sm">
+
+                    Filtrar por lote
+
+                </label>
+
+                <div class="flex gap-2">
+
+                    <select id="filtroLote"
+                        onchange="filtrarMatrizes()"
+                        class="flex-1 text-base p-3 rounded-2xl border border-white/10 bg-white/5">
+
+                        <option value="">
+                            Todos os lotes
+                        </option>
+
+                    </select>
+
+                    <button onclick="limparFiltros()"
+                        class="glass-btn px-4 rounded-2xl">
+
+                        Limpar
+
+                    </button>
+
+                </div>
+
+            </div>
+
+            <!-- DASHBOARD -->
+            <div id="resumoPlantel"
+                class="grid grid-cols-3 gap-2 mb-4"></div>
+
+            <!-- LISTA -->
+            <ul id="listaContatos"
+                class="space-y-2 pb-10"></ul>
+
+        </div>
+
+        <!-- PERFIL -->
+        <div id="tela-perfil"
+            class="escondido space-y-4 pb-10">
+
+            <input type="hidden"
+                id="perfilBrincoAtual">
+
+            <!-- CARD PERFIL -->
+            <div class="card-base rounded-3xl shadow-lg p-6 text-center border border-green-500/20">
+
+                <p class="text-gray-400 font-semibold uppercase tracking-widest text-sm">
+
+                    Matriz
+
+                </p>
+
+                <h2 id="perfilNome"
+                    class="text-4xl sm:text-5xl font-black my-2 break-words">
+
+                    --
+
+                </h2>
+
+                <div id="perfilUltimoStatus"
+                    class="inline-block px-4 py-1 rounded-full text-sm font-bold bg-white/10 mt-1">
+
+                    -
+
+                </div>
+
+                <div class="mt-2">
+
+                    <span id="perfilLoteBadge"
+                        class="escondido inline-block px-3 py-1 rounded-full text-xs font-bold bg-orange-500/20 text-orange-300 mt-1"></span>
+
+                </div>
+
+                <div class="mt-4 flex gap-2">
+
+                    <button onclick="enviarWhatsAppPerfil()"
+                        class="flex-1 border border-green-500/40 text-green-400 font-bold py-3 rounded-2xl">
+
+                        WhatsApp
+
+                    </button>
+
+                    <button onclick="gerarPDFIndividual()"
+                        class="flex-1 border border-red-500/40 text-red-400 font-bold py-3 rounded-2xl">
+
+                        PDF
+
+                    </button>
+
+                </div>
+
+            </div>
+
+            <!-- LOTE -->
+            <div class="card-base rounded-3xl shadow-lg p-5">
+
+                <h3 class="text-lg font-bold mb-3">
+
+                    🏷️ Lote / Grupo
+
+                </h3>
+
+                <div class="flex gap-2">
+
+                    <input type="text"
+                        id="perfilLote"
+                        list="opcoesLotes"
+                        class="flex-1 text-lg p-3 rounded-2xl border border-white/10 bg-white/5">
+
+                    <button onclick="salvarLote()"
+                        class="glass-btn px-5 rounded-2xl">
+
+                        Salvar
+
+                    </button>
+
+                </div>
+
+            </div>
+
+            <!-- NASCIMENTO -->
+            <div class="card-base rounded-3xl shadow-lg p-5">
+
+                <h3 class="text-xl font-bold mb-4">
+
+                    🍼 Nascimento
+
+                </h3>
+
+                <div class="space-y-4">
+
+                    <input type="date"
+                        id="partoData"
+                        class="modal-input">
+
+                    <select id="partoSexo"
+                        class="modal-input">
+
+                        <option value="Macho">
+                            Macho
+                        </option>
+
+                        <option value="Fêmea">
+                            Fêmea
+                        </option>
+
+                    </select>
+
+                    <input type="text"
+                        id="partoObs"
+                        class="modal-input"
+                        placeholder="Observação">
+
+                    <button onclick="salvarParto()"
+                        class="btn-primary">
+
+                        SALVAR NASCIMENTO
+
+                    </button>
+
+                </div>
+
+            </div>
+
+            <!-- HISTÓRICO -->
+            <div class="card-base rounded-3xl shadow-lg p-5">
+
+                <h3 class="text-lg font-bold mb-3">
+
+                    📋 Histórico Completo
+
+                </h3>
+
+                <div id="perfilHistorico"
+                    class="text-sm text-gray-300 space-y-2"></div>
+
+                <button onclick="excluirMatriz()"
+                    class="mt-6 w-full text-red-400 font-bold py-3 rounded-2xl border border-red-500/20">
+
+                    Excluir Animal
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- MENU INFERIOR -->
+    <nav class="menu-bottom">
+
+        <div class="menu-item active">
+            <i class="fa-solid fa-house"></i>
+            <span>Início</span>
+        </div>
+
+        <div class="menu-item">
+            <i class="fa-solid fa-chart-simple"></i>
+            <span>Relatórios</span>
+        </div>
+
+        <div class="menu-item">
+            <i class="fa-solid fa-cloud"></i>
+            <span>Sync</span>
+        </div>
+
+        <div class="menu-item">
+            <i class="fa-solid fa-gear"></i>
+            <span>Config</span>
+        </div>
+
+    </nav>
+
+    <!-- APP JS -->
+    <script src="./assets/js/app.js"></script>
 
 </body>
 </html>
