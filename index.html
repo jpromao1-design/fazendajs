@@ -1210,52 +1210,179 @@ href="./assets/img/icon-192.png">
         }
 
         function atualizarHistoricoPerfil(matriz) {
-            const div = document.getElementById('perfilHistorico');
-            div.innerHTML = '';
 
-            if ((!matriz.historico || matriz.historico.length === 0) && (!matriz.partos || matriz.partos.length === 0)) {
-                const vazio = criarElemento('p', 'italic text-gray-400', 'Nenhum registro ainda.');
-                div.appendChild(vazio);
-                return;
+    const div = document.getElementById('perfilHistorico');
+
+    div.innerHTML = '';
+
+    if (
+        (!matriz.historico || matriz.historico.length === 0) &&
+        (!matriz.partos || matriz.partos.length === 0)
+    ) {
+
+        const vazio = criarElemento(
+            'p',
+            'italic text-gray-400',
+            'Nenhum registro ainda.'
+        );
+
+        div.appendChild(vazio);
+
+        return;
+    }
+
+    // =====================================================
+    // AGRUPAR POR ANO
+    // =====================================================
+
+    const anos = {};
+
+    // PARTOS
+
+    if (matriz.partos && matriz.partos.length > 0) {
+
+        matriz.partos.forEach(p => {
+
+            const ano = String(p.data).slice(0, 4);
+
+            if (!anos[ano]) anos[ano] = [];
+
+            anos[ano].push({
+                tipo: 'parto',
+                data: p.data,
+                sexo: p.sexo,
+                obs: p.obs
+            });
+
+        });
+
+    }
+
+    // DIAGNÓSTICOS
+
+    if (matriz.historico && matriz.historico.length > 0) {
+
+        matriz.historico.forEach(h => {
+
+            const ano = String(h.ano);
+
+            if (!anos[ano]) anos[ano] = [];
+
+            anos[ano].push({
+                tipo: 'diagnostico',
+                situacao: h.situacao,
+                obs: h.obs
+            });
+
+        });
+
+    }
+
+    // =====================================================
+    // ORDENAR ANOS
+    // =====================================================
+
+    const anosOrdenados =
+        Object.keys(anos)
+        .sort((a, b) => Number(b) - Number(a));
+
+    anosOrdenados.forEach(ano => {
+
+        // TÍTULO DO ANO
+
+        const tituloAno = criarElemento(
+            'div',
+            'mt-4 mb-2 text-lg font-black text-jsgreen-500 border-b border-gray-700 pb-1',
+            ano
+        );
+
+        div.appendChild(tituloAno);
+
+        // EVENTOS DO ANO
+
+        anos[ano].forEach(item => {
+
+            // PARTO
+
+            if (item.tipo === 'parto') {
+
+                const card = criarElemento(
+                    'div',
+                    'bg-gray-50 dark:bg-gray-800 border p-3 rounded mb-2 border-l-4 border-l-jsgreen-500'
+                );
+
+                const linha = criarElemento(
+                    'div',
+                    'font-semibold',
+                    `🍼 Parto em ${formatarData(item.data)} • ${item.sexo}`
+                );
+
+                card.appendChild(linha);
+
+                if (item.obs && item.obs !== '-') {
+
+                    const obs = criarElemento(
+                        'div',
+                        'text-xs text-gray-500 dark:text-gray-300 italic mt-1',
+                        `Obs: ${item.obs}`
+                    );
+
+                    card.appendChild(obs);
+
+                }
+
+                div.appendChild(card);
+
             }
 
-            if (matriz.partos && matriz.partos.length > 0) {
-                const titulo = criarElemento('p', 'font-bold text-gray-800 dark:text-gray-100 mt-2', 'Partos Registrados:');
-                div.appendChild(titulo);
+            // DIAGNÓSTICO
 
-                matriz.partos.forEach(p => {
-                    const item = criarElemento('div', 'bg-gray-50 dark:bg-gray-800 border p-2 rounded mb-1 border-l-4 border-l-jsgreen-500');
-                    const linha = criarElemento('div', '', `Nasceu ${p.sexo} em ${formatarData(p.data)}`);
-                    item.appendChild(linha);
+            if (item.tipo === 'diagnostico') {
 
-                    if (p.obs && p.obs !== '-') {
-                        const obs = criarElemento('span', 'text-xs text-gray-500 dark:text-gray-300 italic', `Obs: ${p.obs}`);
-                        item.appendChild(obs);
-                    }
+                const cor =
+                    item.situacao === 'Prenha'
+                    ? 'border-l-green-500'
+                    : 'border-l-red-500';
 
-                    div.appendChild(item);
-                });
+                const emoji =
+                    item.situacao === 'Prenha'
+                    ? '✅'
+                    : '❌';
+
+                const card = criarElemento(
+                    'div',
+                    `bg-gray-50 dark:bg-gray-800 border p-3 rounded mb-2 border-l-4 ${cor}`
+                );
+
+                const linha = criarElemento(
+                    'div',
+                    'font-semibold',
+                    `${emoji} Diagnóstico: ${item.situacao}`
+                );
+
+                card.appendChild(linha);
+
+                if (item.obs && item.obs !== '-') {
+
+                    const obs = criarElemento(
+                        'div',
+                        'text-xs text-gray-500 dark:text-gray-300 italic mt-1',
+                        `Obs: ${item.obs}`
+                    );
+
+                    card.appendChild(obs);
+
+                }
+
+                div.appendChild(card);
+
             }
 
-            if (matriz.historico && matriz.historico.length > 0) {
-                const titulo = criarElemento('p', 'font-bold text-gray-800 dark:text-gray-100 mt-4', 'Diagnósticos:');
-                div.appendChild(titulo);
+        });
 
-                matriz.historico.forEach(h => {
-                    const cor = h.situacao === 'Prenha' ? 'border-l-green-500' : 'border-l-red-500';
-                    const item = criarElemento('div', `bg-gray-50 dark:bg-gray-800 border p-2 rounded mb-1 border-l-4 ${cor}`);
-                    const linha = criarElemento('div', '', `Ano ${h.ano}: ${h.situacao}`);
-                    item.appendChild(linha);
+    });
 
-                    if (h.obs && h.obs !== '-') {
-                        const obs = criarElemento('span', 'text-xs text-gray-500 dark:text-gray-300 italic', `Obs: ${h.obs}`);
-                        item.appendChild(obs);
-                    }
-
-                    div.appendChild(item);
-                });
-            }
-        }
+}
 
         // ============================================================
         // LOTE, PARTO E DIAGNÓSTICO
