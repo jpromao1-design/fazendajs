@@ -1,25 +1,24 @@
 {
-  "name": "FazendaJS - Gestão de Matrizes",
+  "name": "Fazenda JS - Gestão de Matrizes",
   "short_name": "FazendaJS",
   "start_url": "./index.html",
-  "scope": "./",
   "display": "standalone",
-  "background_color": "#0f172a",
-  "theme_color": "#14532d",
+  "background_color": "#020617",
+  "theme_color": "#16a34a",
   "orientation": "portrait",
-  "description": "Sistema de gestão de matrizes bovinas com backup local, PDF, WhatsApp e PWA.",
+  "description": "Sistema profissional de gestão de matrizes bovinas.",
   "icons": [
     {
       "src": "./assets/img/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "maskable"
     },
     {
       "src": "./assets/img/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "maskable"
     }
   ]
 }
