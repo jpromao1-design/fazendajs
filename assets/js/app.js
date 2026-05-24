@@ -8,9 +8,7 @@ document.addEventListener('DOMContentLoaded', iniciarSistema);
 function iniciarSistema() {
     carregarStorage();
     criarModalFicha();
-    atualizarDashboard();
-    renderizarMatrizes();
-    atualizarFiltroLotes();
+    atualizarTudo();
 }
 
 /* ================= STORAGE ================= */
@@ -18,13 +16,16 @@ function iniciarSistema() {
 function carregarStorage() {
     try {
         const atual = JSON.parse(localStorage.getItem(STORAGE_KEY));
-        const anterior = JSON.parse(localStorage.getItem('fazendajs_matrizes_v12'));
+        const anteriorV12 = JSON.parse(localStorage.getItem('fazendajs_matrizes_v12'));
+        const anterior = JSON.parse(localStorage.getItem('fazendajs_matrizes_v11'));
 
         matrizes = Array.isArray(atual)
             ? atual
-            : Array.isArray(anterior)
-                ? anterior
-                : [];
+            : Array.isArray(anteriorV12)
+                ? anteriorV12
+                : Array.isArray(anterior)
+                    ? anterior
+                    : [];
     } catch {
         matrizes = [];
     }
@@ -36,11 +37,13 @@ function salvarStorage() {
 }
 
 function salvarBackupAutomatico() {
-    localStorage.setItem(BACKUP_KEY, JSON.stringify({
+    const backup = {
         versao: 'v13',
         data: new Date().toISOString(),
         matrizes
-    }));
+    };
+
+    localStorage.setItem(BACKUP_KEY, JSON.stringify(backup));
 }
 
 /* ================= TOAST ================= */
@@ -60,13 +63,13 @@ function mostrarToast(texto) {
 /* ================= MODAL CADASTRO ================= */
 
 function abrirModalCadastro() {
-    document.getElementById('modalCadastro').classList.remove('hidden');
-
     const busca = document.getElementById('buscaInput')?.value || '';
     const lote = document.getElementById('loteInput')?.value || '';
 
     document.getElementById('modalNumero').value = busca.toUpperCase();
     document.getElementById('modalLote').value = lote;
+
+    document.getElementById('modalCadastro').classList.remove('hidden');
 }
 
 function fecharModalCadastro() {
@@ -123,13 +126,11 @@ function limparModalCadastro() {
     document.getElementById('modalObs').value = '';
     document.getElementById('modalStatus').value = 'Prenha';
 
-    if (document.getElementById('buscaInput')) {
-        document.getElementById('buscaInput').value = '';
-    }
+    const busca = document.getElementById('buscaInput');
+    const lote = document.getElementById('loteInput');
 
-    if (document.getElementById('loteInput')) {
-        document.getElementById('loteInput').value = '';
-    }
+    if (busca) busca.value = '';
+    if (lote) lote.value = '';
 }
 
 /* ================= DASHBOARD ================= */
@@ -148,6 +149,8 @@ function atualizarDashboard() {
 
 function renderizarMatrizes(lista = matrizes) {
     const container = document.getElementById('listaMatrizes');
+    if (!container) return;
+
     container.innerHTML = '';
 
     if (lista.length === 0) {
@@ -170,25 +173,25 @@ function renderizarMatrizes(lista = matrizes) {
         card.innerHTML = `
             <div class="card-top">
                 <div>
-                    <div class="matriz-numero">${item.numero}</div>
-                    <div class="matriz-lote">${item.lote || 'Sem lote'}</div>
+                    <div class="matriz-numero">${escaparHtml(item.numero)}</div>
+                    <div class="matriz-lote">${escaparHtml(item.lote || 'Sem lote')}</div>
                 </div>
 
                 <div class="status-badge ${badge}">
-                    ${item.status}
+                    ${escaparHtml(item.status)}
                 </div>
             </div>
 
             <div class="card-obs">
-                ${item.obs || 'Sem observações'}
+                ${escaparHtml(item.obs || 'Sem observações')}
             </div>
 
             <div class="card-actions">
-                <button class="btn-prenha" onclick="alterarStatus(${item.id}, 'Prenha')">
+                <button class="btn-prenha" onclick="abrirModalDiagnostico(${item.id}, 'Prenha')">
                     Prenha
                 </button>
 
-                <button class="btn-vazia" onclick="alterarStatus(${item.id}, 'Vazia')">
+                <button class="btn-vazia" onclick="abrirModalDiagnostico(${item.id}, 'Vazia')">
                     Vazia
                 </button>
 
@@ -206,13 +209,27 @@ function renderizarMatrizes(lista = matrizes) {
     });
 }
 
-/* ================= STATUS ================= */
+/* ================= MODAL DIAGNÓSTICO ================= */
 
-function alterarStatus(id, status) {
+function abrirModalDiagnostico(id, status = 'Prenha') {
+    document.getElementById('diagMatrizId').value = id;
+    document.getElementById('diagStatus').value = status;
+    document.getElementById('diagObs').value = '';
+
+    document.getElementById('modalDiagnostico').classList.remove('hidden');
+}
+
+function fecharModalDiagnostico() {
+    document.getElementById('modalDiagnostico').classList.add('hidden');
+}
+
+function salvarDiagnosticoModal() {
+    const id = Number(document.getElementById('diagMatrizId').value);
+    const status = document.getElementById('diagStatus').value;
+    const obs = document.getElementById('diagObs').value.trim() || '-';
+
     const matriz = matrizes.find(m => m.id === id);
     if (!matriz) return;
-
-    const obs = prompt('Observação do diagnóstico:', '') || '-';
 
     matriz.status = status;
 
@@ -229,25 +246,50 @@ function alterarStatus(id, status) {
 
     salvarStorage();
     atualizarTudo();
+    fecharModalDiagnostico();
 
-    mostrarToast('Diagnóstico atualizado');
+    if (!document.getElementById('modalFicha')?.classList.contains('hidden')) {
+        abrirFicha(id);
+    }
+
+    mostrarToast('Diagnóstico salvo');
 }
 
-/* ================= PARTO ================= */
+/* ================= MODAL PARTO ================= */
 
-function registrarParto(id) {
+function abrirModalParto(id) {
+    document.getElementById('partoMatrizId').value = id;
+    document.getElementById('partoData').value = new Date().toISOString().slice(0, 10);
+    document.getElementById('partoSexo').value = 'Macho';
+    document.getElementById('partoObs').value = '';
+
+    document.getElementById('modalParto').classList.remove('hidden');
+}
+
+function fecharModalParto() {
+    document.getElementById('modalParto').classList.add('hidden');
+}
+
+function salvarPartoModal() {
+    const id = Number(document.getElementById('partoMatrizId').value);
+    const data = document.getElementById('partoData').value;
+    const sexo = document.getElementById('partoSexo').value;
+    const obs = document.getElementById('partoObs').value.trim() || '-';
+
+    if (!data) {
+        mostrarToast('Informe a data do parto');
+        return;
+    }
+
     const matriz = matrizes.find(m => m.id === id);
     if (!matriz) return;
 
-    const data = prompt('Data do parto no formato AAAA-MM-DD:', new Date().toISOString().slice(0, 10));
-
-    if (!data) return;
-
-    const sexo = prompt('Sexo do bezerro: Macho ou Fêmea', 'Macho') || 'Macho';
-    const obs = prompt('Observação do parto:', '') || '-';
-
     if (!Array.isArray(matriz.partos)) {
         matriz.partos = [];
+    }
+
+    if (!Array.isArray(matriz.historico)) {
+        matriz.historico = [];
     }
 
     matriz.partos.unshift({
@@ -256,10 +298,6 @@ function registrarParto(id) {
         obs,
         criadoEm: new Date().toISOString()
     });
-
-    if (!Array.isArray(matriz.historico)) {
-        matriz.historico = [];
-    }
 
     matriz.historico.unshift({
         tipo: 'Parto',
@@ -270,6 +308,7 @@ function registrarParto(id) {
 
     salvarStorage();
     atualizarTudo();
+    fecharModalParto();
     abrirFicha(id);
 
     mostrarToast('Parto registrado');
@@ -286,7 +325,9 @@ function criarModalFicha() {
 
     modal.innerHTML = `
         <div class="modal-box ficha-box">
-            <h2 class="modal-title" id="fichaTitulo">Ficha da Matriz</h2>
+            <h2 class="modal-title" id="fichaTitulo">
+                Ficha da Matriz
+            </h2>
 
             <div id="fichaConteudo"></div>
 
@@ -312,8 +353,8 @@ function abrirFicha(id) {
         ? matriz.partos.map(p => `
             <div class="historico-item">
                 <strong>Parto:</strong> ${formatarData(p.data)}<br>
-                <span>Sexo: ${p.sexo}</span><br>
-                <small>${p.obs || '-'}</small>
+                <span>Sexo: ${escaparHtml(p.sexo)}</span><br>
+                <small>${escaparHtml(p.obs || '-')}</small>
             </div>
         `).join('')
         : `<div class="historico-item">Nenhum parto registrado.</div>`;
@@ -321,30 +362,30 @@ function abrirFicha(id) {
     const historico = Array.isArray(matriz.historico) && matriz.historico.length
         ? matriz.historico.map(h => `
             <div class="historico-item">
-                <strong>${h.tipo}:</strong> ${h.status}<br>
+                <strong>${escaparHtml(h.tipo)}:</strong> ${escaparHtml(h.status)}<br>
                 <span>${formatarDataHora(h.data)}</span><br>
-                <small>${h.obs || '-'}</small>
+                <small>${escaparHtml(h.obs || '-')}</small>
             </div>
         `).join('')
         : `<div class="historico-item">Nenhum histórico registrado.</div>`;
 
     document.getElementById('fichaConteudo').innerHTML = `
         <div class="ficha-resumo">
-            <p><strong>Status:</strong> ${matriz.status}</p>
-            <p><strong>Lote:</strong> ${matriz.lote || 'Sem lote'}</p>
-            <p><strong>Observação:</strong> ${matriz.obs || '-'}</p>
+            <p><strong>Status:</strong> ${escaparHtml(matriz.status)}</p>
+            <p><strong>Lote:</strong> ${escaparHtml(matriz.lote || 'Sem lote')}</p>
+            <p><strong>Observação:</strong> ${escaparHtml(matriz.obs || '-')}</p>
         </div>
 
         <div class="card-actions mt-4">
-            <button class="btn-prenha" onclick="alterarStatus(${matriz.id}, 'Prenha')">
+            <button class="btn-prenha" onclick="abrirModalDiagnostico(${matriz.id}, 'Prenha')">
                 Prenha
             </button>
 
-            <button class="btn-vazia" onclick="alterarStatus(${matriz.id}, 'Vazia')">
+            <button class="btn-vazia" onclick="abrirModalDiagnostico(${matriz.id}, 'Vazia')">
                 Vazia
             </button>
 
-            <button class="btn-info" onclick="registrarParto(${matriz.id})">
+            <button class="btn-info" onclick="abrirModalParto(${matriz.id})">
                 Registrar Parto
             </button>
         </div>
@@ -378,6 +419,9 @@ function excluirMatriz(id) {
 
 function atualizarFiltroLotes() {
     const select = document.getElementById('filtroLote');
+    if (!select) return;
+
+    const valorAtual = select.value;
 
     const lotes = [...new Set(
         matrizes
@@ -393,11 +437,13 @@ function atualizarFiltroLotes() {
         option.textContent = lote;
         select.appendChild(option);
     });
+
+    select.value = valorAtual;
 }
 
 function filtrarMatrizes() {
-    const busca = document.getElementById('buscaInput').value.toLowerCase();
-    const lote = document.getElementById('filtroLote').value;
+    const busca = document.getElementById('buscaInput')?.value.toLowerCase() || '';
+    const lote = document.getElementById('filtroLote')?.value || '';
 
     const filtradas = matrizes.filter(item => {
         const buscaOk = item.numero.toLowerCase().includes(busca);
@@ -471,17 +517,34 @@ function formatarDataHora(data) {
     }
 }
 
+function escaparHtml(texto) {
+    return String(texto ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
 /* ================= GLOBAIS ================= */
 
 window.abrirModalCadastro = abrirModalCadastro;
 window.fecharModalCadastro = fecharModalCadastro;
 window.salvarMatrizModal = salvarMatrizModal;
-window.alterarStatus = alterarStatus;
+
+window.abrirModalDiagnostico = abrirModalDiagnostico;
+window.fecharModalDiagnostico = fecharModalDiagnostico;
+window.salvarDiagnosticoModal = salvarDiagnosticoModal;
+
+window.abrirModalParto = abrirModalParto;
+window.fecharModalParto = fecharModalParto;
+window.salvarPartoModal = salvarPartoModal;
+
+window.abrirFicha = abrirFicha;
+window.fecharFicha = fecharFicha;
+
 window.excluirMatriz = excluirMatriz;
 window.filtrarMatrizes = filtrarMatrizes;
 window.limparFiltros = limparFiltros;
 window.exportarBackup = exportarBackup;
-window.abrirFicha = abrirFicha;
-window.fecharFicha = fecharFicha;
-window.registrarParto = registrarParto;
 window.mostrarToast = mostrarToast;
