@@ -1376,7 +1376,10 @@ async function carregarDadosSupabase() {
 
             }
 
-            item.textContent = texto;
+            item.innerHTML =
+    `<span style="color:#111827 !important;">
+        ${texto}
+    </span>`;
 
             div.appendChild(item);
 
@@ -1429,8 +1432,10 @@ async function carregarDadosSupabase() {
 
             }
 
-            item.textContent = texto;
-
+            item.innerHTML =
+    `<span style="color:#111827 !important;">
+        ${texto}
+    </span>`;
             div.appendChild(item);
 
         });
