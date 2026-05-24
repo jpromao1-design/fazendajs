@@ -1,17 +1,160 @@
-// ======================================================
-// BANCO LOCAL
-// ======================================================
-
 const STORAGE_KEY = 'fazendajs_matrizes_v12';
+const BACKUP_KEY = 'fazendajs_backup_auto';
 
-let matrizes = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+let matrizes = [];
 
 // ======================================================
-// SALVAR
+// INIT
 // ======================================================
+
+document.addEventListener('DOMContentLoaded', iniciarSistema);
+
+function iniciarSistema() {
+
+    carregarStorage();
+
+    atualizarDashboard();
+
+    renderizarMatrizes();
+
+    atualizarFiltroLotes();
+}
+
+// ======================================================
+// STORAGE
+// ======================================================
+
+function carregarStorage() {
+
+    try {
+
+        const dados =
+            JSON.parse(localStorage.getItem(STORAGE_KEY));
+
+        matrizes = Array.isArray(dados)
+            ? dados
+            : [];
+
+    } catch {
+
+        matrizes = [];
+    }
+}
 
 function salvarStorage() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(matrizes));
+
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(matrizes)
+    );
+
+    salvarBackupAutomatico();
+}
+
+// ======================================================
+// BACKUP AUTO
+// ======================================================
+
+function salvarBackupAutomatico() {
+
+    const backup = {
+
+        versao: 'v12',
+
+        data: new Date().toISOString(),
+
+        matrizes
+    };
+
+    localStorage.setItem(
+        BACKUP_KEY,
+        JSON.stringify(backup)
+    );
+}
+
+// ======================================================
+// EXPORTAR BACKUP
+// ======================================================
+
+function exportarBackup() {
+
+    const backup = {
+
+        versao: 'v12',
+
+        exportadoEm: new Date().toISOString(),
+
+        total: matrizes.length,
+
+        matrizes
+    };
+
+    const blob = new Blob(
+        [JSON.stringify(backup, null, 2)],
+        { type: 'application/json' }
+    );
+
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+
+    a.href = url;
+
+    a.download =
+        `fazendajs-backup-${Date.now()}.json`;
+
+    a.click();
+
+    URL.revokeObjectURL(url);
+
+    mostrarToast('Backup exportado');
+}
+
+// ======================================================
+// IMPORTAR BACKUP
+// ======================================================
+
+function importarBackup(event) {
+
+    const file = event.target.files[0];
+
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+
+        try {
+
+            const dados =
+                JSON.parse(e.target.result);
+
+            if (!dados.matrizes) {
+
+                mostrarToast('Backup inválido');
+
+                return;
+            }
+
+            matrizes = dados.matrizes;
+
+            salvarStorage();
+
+            atualizarDashboard();
+
+            renderizarMatrizes();
+
+            atualizarFiltroLotes();
+
+            mostrarToast('Backup restaurado');
+
+        } catch {
+
+            mostrarToast('Erro ao importar backup');
+        }
+    };
+
+    reader.readAsText(file);
 }
 
 // ======================================================
@@ -20,13 +163,17 @@ function salvarStorage() {
 
 function mostrarToast(texto) {
 
-    const toast = document.getElementById('toast');
+    const toast =
+        document.getElementById('toast');
 
     toast.innerText = texto;
+
     toast.classList.add('show');
 
     setTimeout(() => {
+
         toast.classList.remove('show');
+
     }, 3000);
 }
 
@@ -35,35 +182,82 @@ function mostrarToast(texto) {
 // ======================================================
 
 function abrirModalCadastro() {
-    document.getElementById('modalCadastro').classList.remove('hidden');
+
+    document
+        .getElementById('modalCadastro')
+        .classList
+        .remove('hidden');
 }
 
 function fecharModalCadastro() {
-    document.getElementById('modalCadastro').classList.add('hidden');
+
+    document
+        .getElementById('modalCadastro')
+        .classList
+        .add('hidden');
 }
 
 // ======================================================
-// CADASTRAR MATRIZ
+// CADASTRAR
 // ======================================================
 
 function salvarMatrizModal() {
 
-    const numero = document.getElementById('modalNumero').value.trim();
-    const lote = document.getElementById('modalLote').value.trim();
-    const obs = document.getElementById('modalObs').value.trim();
-    const status = document.getElementById('modalStatus').value;
+    const numero =
+        document.getElementById('modalNumero')
+            .value
+            .trim();
+
+    const lote =
+        document.getElementById('modalLote')
+            .value
+            .trim();
+
+    const obs =
+        document.getElementById('modalObs')
+            .value
+            .trim();
+
+    const status =
+        document.getElementById('modalStatus')
+            .value;
 
     if (!numero) {
-        mostrarToast('Digite o número da matriz');
+
+        mostrarToast(
+            'Digite o número da matriz'
+        );
+
+        return;
+    }
+
+    const existe = matrizes.find(
+        m => m.numero === numero
+    );
+
+    if (existe) {
+
+        mostrarToast(
+            'Matriz já cadastrada'
+        );
+
         return;
     }
 
     const nova = {
+
         id: Date.now(),
+
         numero,
+
         lote,
+
         obs,
-        status
+
+        status,
+
+        criadoEm:
+            new Date().toISOString()
     };
 
     matrizes.unshift(nova);
@@ -71,25 +265,72 @@ function salvarMatrizModal() {
     salvarStorage();
 
     atualizarDashboard();
+
     renderizarMatrizes();
+
     atualizarFiltroLotes();
 
     fecharModalCadastro();
 
-    document.getElementById('modalNumero').value = '';
-    document.getElementById('modalLote').value = '';
-    document.getElementById('modalObs').value = '';
+    limparModal();
 
-    mostrarToast('Matriz cadastrada com sucesso');
+    mostrarToast(
+        'Matriz cadastrada'
+    );
 }
 
 // ======================================================
-// RENDER
+// LIMPAR MODAL
+// ======================================================
+
+function limparModal() {
+
+    document.getElementById(
+        'modalNumero'
+    ).value = '';
+
+    document.getElementById(
+        'modalLote'
+    ).value = '';
+
+    document.getElementById(
+        'modalObs'
+    ).value = '';
+}
+
+// ======================================================
+// DASHBOARD
+// ======================================================
+
+function atualizarDashboard() {
+
+    document.getElementById(
+        'totalMatrizes'
+    ).innerText = matrizes.length;
+
+    document.getElementById(
+        'totalPrenhas'
+    ).innerText = matrizes.filter(
+        m => m.status === 'Prenha'
+    ).length;
+
+    document.getElementById(
+        'totalVazias'
+    ).innerText = matrizes.filter(
+        m => m.status === 'Vazia'
+    ).length;
+}
+
+// ======================================================
+// LISTA
 // ======================================================
 
 function renderizarMatrizes(lista = matrizes) {
 
-    const container = document.getElementById('listaMatrizes');
+    const container =
+        document.getElementById(
+            'listaMatrizes'
+        );
 
     container.innerHTML = '';
 
@@ -97,7 +338,7 @@ function renderizarMatrizes(lista = matrizes) {
 
         container.innerHTML = `
             <div class="empty-state">
-                Nenhuma matriz encontrada.
+                Nenhuma matriz cadastrada
             </div>
         `;
 
@@ -106,14 +347,15 @@ function renderizarMatrizes(lista = matrizes) {
 
     lista.forEach(item => {
 
-        const statusClass =
+        const card =
+            document.createElement('div');
+
+        card.className = 'matriz-card';
+
+        const badge =
             item.status === 'Prenha'
                 ? 'badge-prenha'
                 : 'badge-vazia';
-
-        const card = document.createElement('div');
-
-        card.className = 'matriz-card';
 
         card.innerHTML = `
 
@@ -131,7 +373,7 @@ function renderizarMatrizes(lista = matrizes) {
 
                 </div>
 
-                <div class="status-badge ${statusClass}">
+                <div class="status-badge ${badge}">
                     ${item.status}
                 </div>
 
@@ -145,23 +387,26 @@ function renderizarMatrizes(lista = matrizes) {
 
                 <button
                     class="btn-prenha"
-                    onclick="alterarStatus(${item.id}, 'Prenha')"
-                >
+                    onclick="alterarStatus(${item.id}, 'Prenha')">
+
                     Prenha
+
                 </button>
 
                 <button
                     class="btn-vazia"
-                    onclick="alterarStatus(${item.id}, 'Vazia')"
-                >
+                    onclick="alterarStatus(${item.id}, 'Vazia')">
+
                     Vazia
+
                 </button>
 
                 <button
                     class="btn-delete"
-                    onclick="excluirMatriz(${item.id})"
-                >
+                    onclick="excluirMatriz(${item.id})">
+
                     Excluir
+
                 </button>
 
             </div>
@@ -177,18 +422,22 @@ function renderizarMatrizes(lista = matrizes) {
 
 function alterarStatus(id, status) {
 
-    const item = matrizes.find(m => m.id === id);
+    const matriz =
+        matrizes.find(m => m.id === id);
 
-    if (!item) return;
+    if (!matriz) return;
 
-    item.status = status;
+    matriz.status = status;
 
     salvarStorage();
 
     atualizarDashboard();
+
     renderizarMatrizes();
 
-    mostrarToast('Status atualizado');
+    mostrarToast(
+        'Status atualizado'
+    );
 }
 
 // ======================================================
@@ -197,59 +446,54 @@ function alterarStatus(id, status) {
 
 function excluirMatriz(id) {
 
-    if (!confirm('Deseja excluir esta matriz?')) {
-        return;
-    }
+    if (!confirm(
+        'Deseja excluir esta matriz?'
+    )) return;
 
-    matrizes = matrizes.filter(m => m.id !== id);
+    matrizes =
+        matrizes.filter(m => m.id !== id);
 
     salvarStorage();
 
     atualizarDashboard();
+
     renderizarMatrizes();
+
     atualizarFiltroLotes();
 
-    mostrarToast('Matriz excluída');
+    mostrarToast(
+        'Matriz excluída'
+    );
 }
 
 // ======================================================
-// DASHBOARD
-// ======================================================
-
-function atualizarDashboard() {
-
-    document.getElementById('totalMatrizes').textContent =
-        matrizes.length;
-
-    document.getElementById('totalPrenhas').textContent =
-        matrizes.filter(m => m.status === 'Prenha').length;
-
-    document.getElementById('totalVazias').textContent =
-        matrizes.filter(m => m.status === 'Vazia').length;
-}
-
-// ======================================================
-// FILTRO
+// FILTROS
 // ======================================================
 
 function atualizarFiltroLotes() {
 
-    const select = document.getElementById('filtroLote');
+    const select =
+        document.getElementById(
+            'filtroLote'
+        );
 
-    const lotes = [...new Set(
-        matrizes
-            .map(m => m.lote)
-            .filter(Boolean)
-    )];
+    const lotes =
+        [...new Set(
+            matrizes
+                .map(m => m.lote)
+                .filter(Boolean)
+        )];
 
     select.innerHTML =
         '<option value="">Todos os lotes</option>';
 
     lotes.forEach(lote => {
 
-        const option = document.createElement('option');
+        const option =
+            document.createElement('option');
 
         option.value = lote;
+
         option.textContent = lote;
 
         select.appendChild(option);
@@ -259,39 +503,42 @@ function atualizarFiltroLotes() {
 function filtrarMatrizes() {
 
     const busca =
-        document.getElementById('buscaInput')
+        document
+            .getElementById('buscaInput')
             .value
             .toLowerCase();
 
     const lote =
-        document.getElementById('filtroLote').value;
+        document
+            .getElementById('filtroLote')
+            .value;
 
-    const filtradas = matrizes.filter(item => {
+    const filtradas =
+        matrizes.filter(item => {
 
-        const matchBusca =
-            item.numero.toLowerCase().includes(busca);
+            const buscaOk =
+                item.numero
+                    .toLowerCase()
+                    .includes(busca);
 
-        const matchLote =
-            !lote || item.lote === lote;
+            const loteOk =
+                !lote || item.lote === lote;
 
-        return matchBusca && matchLote;
-    });
+            return buscaOk && loteOk;
+        });
 
     renderizarMatrizes(filtradas);
 }
 
 function limparFiltros() {
 
-    document.getElementById('buscaInput').value = '';
-    document.getElementById('filtroLote').value = '';
+    document.getElementById(
+        'buscaInput'
+    ).value = '';
+
+    document.getElementById(
+        'filtroLote'
+    ).value = '';
 
     renderizarMatrizes();
 }
-
-// ======================================================
-// INIT
-// ======================================================
-
-atualizarDashboard();
-renderizarMatrizes();
-atualizarFiltroLotes();
