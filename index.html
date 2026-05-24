@@ -842,11 +842,7 @@ async function carregarDadosSupabase() {
                 data.map(supabaseParaMatriz)
             );
 
-        plantel =
-    mesclarPlantel(
-        plantel,
-        remoto
-    );
+        plantel = remoto;
 
         localStorage.setItem(
             DB.plantel,
@@ -884,6 +880,61 @@ async function carregarDadosSupabase() {
                 atualizarDatalistLotes();
                 atualizarFiltroLotes();
             }
+            // =====================================================
+// REALTIME SUPABASE
+// =====================================================
+
+if (supabaseClient) {
+
+    supabaseClient
+        .channel('fazendajs-realtime')
+
+        .on(
+            'postgres_changes',
+            {
+                event: '*',
+                schema: 'public',
+                table: 'matrizes'
+            },
+
+            async () => {
+
+                console.log(
+                    'Realtime Supabase: atualização recebida.'
+                );
+
+                await carregarDadosSupabase();
+
+                renderizarLista();
+
+                const perfilAberto =
+                    document.getElementById(
+                        'perfilBrincoAtual'
+                    ).value;
+
+                if (perfilAberto) {
+
+                    const matriz =
+                        encontrarMatriz(
+                            perfilAberto
+                        );
+
+                    if (matriz) {
+
+                        atualizarHistoricoPerfil(
+                            matriz
+                        );
+
+                    }
+
+                }
+
+            }
+        )
+
+        .subscribe();
+
+}
         });
 
         // ============================================================
@@ -1739,7 +1790,7 @@ async function carregarDadosSupabase() {
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
+        navigator.serviceWorker.register('./sw.js?v=11.1')
         .then(reg => console.log('SW registrado', reg))
         .catch(err => console.log('Erro SW', err));
     });
@@ -1824,11 +1875,8 @@ rgba(255,255,255,.45) !important;
 h1,h2,h3,h4,h5,h6,
 label,
 p,
-span,
-div{
-
-color:white !important;
-
+span{
+    color:white !important;
 }
 
 /* MENU INFERIOR */
