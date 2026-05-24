@@ -1,263 +1,377 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Fazenda JS</title>
+    <meta charset="UTF-8" />
 
-  <meta name="theme-color" content="#16a34a" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
-  <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="./assets/css/style.css" />
+    <meta name="theme-color" content="#16a34a" />
 
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="mobile-web-app-capable" content="yes" />
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+
+    <meta name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent" />
+
+    <title>Fazenda JS</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="./manifest.json" />
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="./assets/css/style.css" />
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
 </head>
 
 <body>
 
-  <!-- ===================================================== -->
-  <!-- HEADER -->
-  <!-- ===================================================== -->
+    <!-- ===================================================== -->
+    <!-- HEADER -->
+    <!-- ===================================================== -->
 
-  <header class="app-header">
+    <header class="app-header">
 
-    <div class="logo-area">
+        <div class="logo-area">
 
-      <div class="logo-icon">
-        🐄
-      </div>
+            <div class="logo-icon">
+                🐄
+            </div>
 
-      <div>
-        <h1 class="logo-title">Fazenda JS</h1>
-        <p class="logo-subtitle">Gestão Inteligente v12</p>
-      </div>
+            <div>
+
+                <h1 class="logo-title">
+                    Fazenda JS
+                </h1>
+
+                <p class="logo-subtitle">
+                    Gestão Inteligente v12
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="header-actions">
+
+            <!-- TEMA -->
+            <button class="icon-btn"
+                onclick="mostrarToast('Tema em desenvolvimento')">
+
+                🌙
+
+            </button>
+
+            <!-- CLOUD -->
+            <button class="icon-btn"
+                onclick="mostrarToast('Sincronização futura Supabase')">
+
+                ☁️
+
+            </button>
+
+            <!-- BACKUP -->
+            <button class="icon-btn"
+                onclick="exportarBackup()">
+
+                ⬇️
+
+            </button>
+
+            <!-- PDF -->
+            <button class="pdf-btn"
+                onclick="mostrarToast('PDF em desenvolvimento')">
+
+                PDF
+
+            </button>
+
+        </div>
+
+    </header>
+
+    <!-- ===================================================== -->
+    <!-- MAIN -->
+    <!-- ===================================================== -->
+
+    <main class="main-container">
+
+        <!-- ===================================================== -->
+        <!-- CARD PRINCIPAL -->
+        <!-- ===================================================== -->
+
+        <section class="glass-card">
+
+            <input type="text"
+                id="buscaInput"
+                class="main-input"
+                placeholder="DIGITE O NÚMERO OU NOME..."
+                oninput="filtrarMatrizes()" />
+
+            <input type="text"
+                id="loteInput"
+                class="main-input"
+                placeholder="Lote (Opcional)" />
+
+            <button class="main-button"
+                onclick="abrirModalCadastro()">
+
+                ➕ Cadastrar Matriz
+
+            </button>
+
+        </section>
+
+        <!-- ===================================================== -->
+        <!-- FILTRO -->
+        <!-- ===================================================== -->
+
+        <section class="glass-card">
+
+            <div class="filtro-row">
+
+                <select id="filtroLote"
+                    class="select-input"
+                    onchange="filtrarMatrizes()">
+
+                    <option value="">
+                        Todos os lotes
+                    </option>
+
+                </select>
+
+                <button class="clear-btn"
+                    onclick="limparFiltros()">
+
+                    Limpar
+
+                </button>
+
+            </div>
+
+        </section>
+
+        <!-- ===================================================== -->
+        <!-- DASHBOARD -->
+        <!-- ===================================================== -->
+
+        <section class="dashboard-grid">
+
+            <div class="dashboard-card">
+
+                <h2 id="totalMatrizes">
+                    0
+                </h2>
+
+                <span>
+                    TOTAL
+                </span>
+
+            </div>
+
+            <div class="dashboard-card">
+
+                <h2 class="text-green"
+                    id="totalPrenhas">
+
+                    0
+
+                </h2>
+
+                <span>
+                    PRENHAS
+                </span>
+
+            </div>
+
+            <div class="dashboard-card">
+
+                <h2 class="text-red"
+                    id="totalVazias">
+
+                    0
+
+                </h2>
+
+                <span>
+                    VAZIAS
+                </span>
+
+            </div>
+
+        </section>
+
+        <!-- ===================================================== -->
+        <!-- LISTA MATRIZES -->
+        <!-- ===================================================== -->
+
+        <section id="listaMatrizes"
+            class="lista-matrizes">
+
+        </section>
+
+    </main>
+
+    <!-- ===================================================== -->
+    <!-- MENU INFERIOR -->
+    <!-- ===================================================== -->
+
+    <nav class="bottom-nav">
+
+        <button class="nav-btn active">
+
+            🏠
+
+        </button>
+
+        <button class="nav-btn">
+
+            📊
+
+        </button>
+
+        <button class="nav-btn">
+
+            ☁️
+
+        </button>
+
+        <button class="nav-btn">
+
+            ⚙️
+
+        </button>
+
+    </nav>
+
+    <!-- ===================================================== -->
+    <!-- MODAL -->
+    <!-- ===================================================== -->
+
+    <div id="modalCadastro"
+        class="modal-overlay hidden">
+
+        <div class="modal-box">
+
+            <h2 class="modal-title">
+
+                Nova Matriz
+
+            </h2>
+
+            <input type="text"
+                id="modalNumero"
+                class="modal-input"
+                placeholder="Número da matriz" />
+
+            <input type="text"
+                id="modalLote"
+                class="modal-input"
+                placeholder="Lote" />
+
+            <textarea id="modalObs"
+                class="modal-textarea"
+                placeholder="Observações"></textarea>
+
+            <select id="modalStatus"
+                class="modal-input">
+
+                <option value="Prenha">
+                    Prenha
+                </option>
+
+                <option value="Vazia">
+                    Vazia
+                </option>
+
+            </select>
+
+            <div class="modal-actions">
+
+                <button class="cancel-btn"
+                    onclick="fecharModalCadastro()">
+
+                    Cancelar
+
+                </button>
+
+                <button class="save-btn"
+                    onclick="salvarMatrizModal()">
+
+                    Salvar
+
+                </button>
+
+            </div>
+
+        </div>
 
     </div>
 
-    <div class="header-actions">
-
-      <button class="icon-btn">
-        🌙
-      </button>
-
-      <button class="icon-btn">
-        ☁️
-      </button>
-
-      <button class="icon-btn">
-        ⬇️
-      </button>
-
-      <button class="pdf-btn">
-        PDF
-      </button>
-
-    </div>
-
-  </header>
-
-  <!-- ===================================================== -->
-  <!-- MAIN -->
-  <!-- ===================================================== -->
-
-  <main class="main-container">
-
     <!-- ===================================================== -->
-    <!-- CARD CADASTRO -->
+    <!-- TOAST -->
     <!-- ===================================================== -->
 
-    <section class="glass-card">
-
-      <input
-        type="text"
-        id="buscaInput"
-        class="main-input"
-        placeholder="DIGITE O NÚMERO OU NOME..."
-        oninput="filtrarMatrizes()"
-      />
-
-      <input
-        type="text"
-        id="loteInput"
-        class="main-input"
-        placeholder="Lote (Opcional)"
-      />
-
-      <button
-        class="main-button"
-        onclick="abrirModalCadastro()"
-      >
-        ➕ Cadastrar Matriz
-      </button>
-
-    </section>
+    <div id="toast"></div>
 
     <!-- ===================================================== -->
-    <!-- FILTRO -->
+    <!-- JS -->
     <!-- ===================================================== -->
 
-    <section class="glass-card">
-
-      <div class="filtro-row">
-
-        <select
-          id="filtroLote"
-          class="select-input"
-          onchange="filtrarMatrizes()"
-        >
-          <option value="">Todos os lotes</option>
-        </select>
-
-        <button
-          class="clear-btn"
-          onclick="limparFiltros()"
-        >
-          Limpar
-        </button>
-
-      </div>
-
-    </section>
+    <script src="./assets/js/app.js"></script>
 
     <!-- ===================================================== -->
-    <!-- DASHBOARD -->
+    <!-- PWA -->
     <!-- ===================================================== -->
 
-    <section class="dashboard-grid">
+    <script>
 
-      <div class="dashboard-card">
-        <h2 id="totalMatrizes">0</h2>
-        <span>TOTAL</span>
-      </div>
+        let deferredPrompt;
 
-      <div class="dashboard-card">
-        <h2 class="text-green" id="totalPrenhas">0</h2>
-        <span>PRENHAS</span>
-      </div>
+        window.addEventListener('beforeinstallprompt', (e) => {
 
-      <div class="dashboard-card">
-        <h2 class="text-red" id="totalVazias">0</h2>
-        <span>VAZIAS</span>
-      </div>
+            e.preventDefault();
 
-    </section>
+            deferredPrompt = e;
 
-    <!-- ===================================================== -->
-    <!-- LISTA -->
-    <!-- ===================================================== -->
+            mostrarToast('Aplicativo pronto para instalar');
 
-    <section
-      id="listaMatrizes"
-      class="lista-matrizes"
-    >
-    </section>
+        });
 
-  </main>
+        // ======================================================
+        // SERVICE WORKER
+        // ======================================================
 
-  <!-- ===================================================== -->
-  <!-- MENU INFERIOR -->
-  <!-- ===================================================== -->
+        if ('serviceWorker' in navigator) {
 
-  <nav class="bottom-nav">
+            window.addEventListener('load', () => {
 
-    <button class="nav-btn active">
-      🏠
-    </button>
+                navigator.serviceWorker.register('./sw.js')
 
-    <button class="nav-btn">
-      📊
-    </button>
+                    .then(() => {
 
-    <button class="nav-btn">
-      ☁️
-    </button>
+                        console.log('Service Worker registrado');
 
-    <button class="nav-btn">
-      ⚙️
-    </button>
+                    })
 
-  </nav>
+                    .catch(err => {
 
-  <!-- ===================================================== -->
-  <!-- MODAL -->
-  <!-- ===================================================== -->
+                        console.log('Erro SW:', err);
 
-  <div
-    id="modalCadastro"
-    class="modal-overlay hidden"
-  >
+                    });
 
-    <div class="modal-box">
+            });
 
-      <h2 class="modal-title">
-        Nova Matriz
-      </h2>
+        }
 
-      <input
-        type="text"
-        id="modalNumero"
-        class="modal-input"
-        placeholder="Número da matriz"
-      />
-
-      <input
-        type="text"
-        id="modalLote"
-        class="modal-input"
-        placeholder="Lote"
-      />
-
-      <textarea
-        id="modalObs"
-        class="modal-textarea"
-        placeholder="Observações"
-      ></textarea>
-
-      <select
-        id="modalStatus"
-        class="modal-input"
-      >
-        <option value="Prenha">Prenha</option>
-        <option value="Vazia">Vazia</option>
-      </select>
-
-      <div class="modal-actions">
-
-        <button
-          class="cancel-btn"
-          onclick="fecharModalCadastro()"
-        >
-          Cancelar
-        </button>
-
-        <button
-          class="save-btn"
-          onclick="salvarMatrizModal()"
-        >
-          Salvar
-        </button>
-
-      </div>
-
-    </div>
-
-  </div>
-
-  <!-- ===================================================== -->
-  <!-- TOAST -->
-  <!-- ===================================================== -->
-
-  <div id="toast"></div>
-
-  <!-- ===================================================== -->
-  <!-- JS -->
-  <!-- ===================================================== -->
-
-  <script src="./assets/js/app.js"></script>
+    </script>
 
 </body>
+
 </html>
