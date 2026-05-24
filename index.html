@@ -1351,16 +1351,18 @@ async function carregarDadosSupabase() {
                 : 'border-l-red-500';
 
             const item =
-                criarElemento(
-                    'div',
-                    `bg-gray-50 dark:bg-gray-800
-                     border
-                     p-3
-                     rounded
-                     mb-3
-                     border-l-4
-                     ${cor}`
-                );
+    criarElemento(
+        'div',
+        `bg-gray-50 dark:bg-gray-800
+         border
+         p-3
+         rounded
+         mb-3
+         border-l-4
+         ${cor}
+         text-gray-900 dark:text-white
+         font-medium`
+    );
 
             let texto =
                 `Ano ${h.ano}: ${h.situacao}`;
@@ -1410,10 +1412,10 @@ async function carregarDadosSupabase() {
         partosOrdenados.forEach(p => {
 
             const item =
-                criarElemento(
-                    'div',
-                    'bg-gray-50 dark:bg-gray-800 border p-3 rounded mb-3 border-l-4 border-l-jsgreen-500'
-                );
+    criarElemento(
+        'div',
+        'bg-gray-50 dark:bg-gray-800 border p-3 rounded mb-3 border-l-4 border-l-jsgreen-500 text-gray-900 dark:text-white font-medium'
+    );
 
             let texto =
                 `${formatarData(p.data)} • ${p.sexo}`;
