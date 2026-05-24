@@ -2,109 +2,60 @@
 <html lang="pt-BR">
 
 <head>
-
     <meta charset="UTF-8" />
 
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
     <meta name="theme-color" content="#16a34a" />
-
     <meta name="mobile-web-app-capable" content="yes" />
-
     <meta name="apple-mobile-web-app-capable" content="yes" />
-
-    <meta name="apple-mobile-web-app-status-bar-style"
-        content="black-translucent" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
     <title>Fazenda JS</title>
 
-    <!-- PWA -->
     <link rel="manifest" href="./manifest.json" />
-
-    <!-- CSS -->
     <link rel="stylesheet" href="./assets/css/style.css" />
 
-    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
-
 </head>
 
 <body>
 
-    <!-- ===================================================== -->
-    <!-- HEADER -->
-    <!-- ===================================================== -->
-
     <header class="app-header">
 
         <div class="logo-area">
-
-            <div class="logo-icon">
-                🐄
-            </div>
+            <div class="logo-icon">🐄</div>
 
             <div>
-
-                <h1 class="logo-title">
-                    Fazenda JS
-                </h1>
-
-                <p class="logo-subtitle">
-                    Gestão Inteligente v12
-                </p>
-
+                <h1 class="logo-title">Fazenda JS</h1>
+                <p class="logo-subtitle">Gestão Inteligente v13</p>
             </div>
-
         </div>
 
         <div class="header-actions">
 
-            <!-- TEMA -->
-            <button class="icon-btn"
-                onclick="mostrarToast('Tema em desenvolvimento')">
-
+            <button class="icon-btn" onclick="mostrarToast('Tema em desenvolvimento')">
                 🌙
-
             </button>
 
-            <!-- CLOUD -->
-            <button class="icon-btn"
-                onclick="mostrarToast('Sincronização futura Supabase')">
-
+            <button class="icon-btn" onclick="mostrarToast('Sincronização futura Supabase')">
                 ☁️
-
             </button>
 
-            <!-- BACKUP -->
-            <button class="icon-btn"
-                onclick="exportarBackup()">
-
+            <button class="icon-btn" onclick="exportarBackup()">
                 ⬇️
-
             </button>
 
-            <!-- PDF -->
-            <button class="pdf-btn"
-                onclick="mostrarToast('PDF em desenvolvimento')">
-
+            <button class="pdf-btn" onclick="mostrarToast('PDF em desenvolvimento')">
                 PDF
-
             </button>
 
         </div>
 
     </header>
 
-    <!-- ===================================================== -->
-    <!-- MAIN -->
-    <!-- ===================================================== -->
-
     <main class="main-container">
-
-        <!-- ===================================================== -->
-        <!-- CARD PRINCIPAL -->
-        <!-- ===================================================== -->
 
         <section class="glass-card">
 
@@ -119,18 +70,11 @@
                 class="main-input"
                 placeholder="Lote (Opcional)" />
 
-            <button class="main-button"
-                onclick="abrirModalCadastro()">
-
+            <button class="main-button" onclick="abrirModalCadastro()">
                 ➕ Cadastrar Matriz
-
             </button>
 
         </section>
-
-        <!-- ===================================================== -->
-        <!-- FILTRO -->
-        <!-- ===================================================== -->
 
         <section class="glass-card">
 
@@ -140,130 +84,55 @@
                     class="select-input"
                     onchange="filtrarMatrizes()">
 
-                    <option value="">
-                        Todos os lotes
-                    </option>
+                    <option value="">Todos os lotes</option>
 
                 </select>
 
-                <button class="clear-btn"
-                    onclick="limparFiltros()">
-
+                <button class="clear-btn" onclick="limparFiltros()">
                     Limpar
-
                 </button>
 
             </div>
 
         </section>
 
-        <!-- ===================================================== -->
-        <!-- DASHBOARD -->
-        <!-- ===================================================== -->
-
         <section class="dashboard-grid">
 
             <div class="dashboard-card">
-
-                <h2 id="totalMatrizes">
-                    0
-                </h2>
-
-                <span>
-                    TOTAL
-                </span>
-
+                <h2 id="totalMatrizes">0</h2>
+                <span>TOTAL</span>
             </div>
 
             <div class="dashboard-card">
-
-                <h2 class="text-green"
-                    id="totalPrenhas">
-
-                    0
-
-                </h2>
-
-                <span>
-                    PRENHAS
-                </span>
-
+                <h2 class="text-green" id="totalPrenhas">0</h2>
+                <span>PRENHAS</span>
             </div>
 
             <div class="dashboard-card">
-
-                <h2 class="text-red"
-                    id="totalVazias">
-
-                    0
-
-                </h2>
-
-                <span>
-                    VAZIAS
-                </span>
-
+                <h2 class="text-red" id="totalVazias">0</h2>
+                <span>VAZIAS</span>
             </div>
 
         </section>
 
-        <!-- ===================================================== -->
-        <!-- LISTA MATRIZES -->
-        <!-- ===================================================== -->
-
-        <section id="listaMatrizes"
-            class="lista-matrizes">
-
-        </section>
+        <section id="listaMatrizes" class="lista-matrizes"></section>
 
     </main>
 
-    <!-- ===================================================== -->
-    <!-- MENU INFERIOR -->
-    <!-- ===================================================== -->
-
     <nav class="bottom-nav">
 
-        <button class="nav-btn active">
-
-            🏠
-
-        </button>
-
-        <button class="nav-btn">
-
-            📊
-
-        </button>
-
-        <button class="nav-btn">
-
-            ☁️
-
-        </button>
-
-        <button class="nav-btn">
-
-            ⚙️
-
-        </button>
+        <button class="nav-btn active">🏠</button>
+        <button class="nav-btn">📊</button>
+        <button class="nav-btn">☁️</button>
+        <button class="nav-btn">⚙️</button>
 
     </nav>
 
-    <!-- ===================================================== -->
-    <!-- MODAL -->
-    <!-- ===================================================== -->
-
-    <div id="modalCadastro"
-        class="modal-overlay hidden">
+    <div id="modalCadastro" class="modal-overlay hidden">
 
         <div class="modal-box">
 
-            <h2 class="modal-title">
-
-                Nova Matriz
-
-            </h2>
+            <h2 class="modal-title">Nova Matriz</h2>
 
             <input type="text"
                 id="modalNumero"
@@ -279,33 +148,19 @@
                 class="modal-textarea"
                 placeholder="Observações"></textarea>
 
-            <select id="modalStatus"
-                class="modal-input">
-
-                <option value="Prenha">
-                    Prenha
-                </option>
-
-                <option value="Vazia">
-                    Vazia
-                </option>
-
+            <select id="modalStatus" class="modal-input">
+                <option value="Prenha">Prenha</option>
+                <option value="Vazia">Vazia</option>
             </select>
 
             <div class="modal-actions">
 
-                <button class="cancel-btn"
-                    onclick="fecharModalCadastro()">
-
+                <button class="cancel-btn" onclick="fecharModalCadastro()">
                     Cancelar
-
                 </button>
 
-                <button class="save-btn"
-                    onclick="salvarMatrizModal()">
-
+                <button class="save-btn" onclick="salvarMatrizModal()">
                     Salvar
-
                 </button>
 
             </div>
@@ -314,62 +169,98 @@
 
     </div>
 
-    <!-- ===================================================== -->
-    <!-- TOAST -->
-    <!-- ===================================================== -->
+    <div id="modalDiagnostico" class="modal-overlay hidden">
+
+        <div class="modal-box">
+
+            <h2 class="modal-title">Novo Diagnóstico</h2>
+
+            <input type="hidden" id="diagMatrizId">
+
+            <select id="diagStatus" class="modal-input">
+                <option value="Prenha">Prenha</option>
+                <option value="Vazia">Vazia</option>
+            </select>
+
+            <textarea id="diagObs"
+                class="modal-textarea"
+                placeholder="Observações do diagnóstico"></textarea>
+
+            <div class="modal-actions">
+
+                <button class="cancel-btn" onclick="fecharModalDiagnostico()">
+                    Cancelar
+                </button>
+
+                <button class="save-btn" onclick="salvarDiagnosticoModal()">
+                    Salvar
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div id="modalParto" class="modal-overlay hidden">
+
+        <div class="modal-box">
+
+            <h2 class="modal-title">Registrar Parto</h2>
+
+            <input type="hidden" id="partoMatrizId">
+
+            <input type="date"
+                id="partoData"
+                class="modal-input">
+
+            <select id="partoSexo" class="modal-input">
+                <option value="Macho">Macho</option>
+                <option value="Fêmea">Fêmea</option>
+            </select>
+
+            <textarea id="partoObs"
+                class="modal-textarea"
+                placeholder="Observações do parto"></textarea>
+
+            <div class="modal-actions">
+
+                <button class="cancel-btn" onclick="fecharModalParto()">
+                    Cancelar
+                </button>
+
+                <button class="save-btn" onclick="salvarPartoModal()">
+                    Salvar
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
 
     <div id="toast"></div>
 
-    <!-- ===================================================== -->
-    <!-- JS -->
-    <!-- ===================================================== -->
-
     <script src="./assets/js/app.js"></script>
 
-    <!-- ===================================================== -->
-    <!-- PWA -->
-    <!-- ===================================================== -->
-
     <script>
-
         let deferredPrompt;
 
         window.addEventListener('beforeinstallprompt', (e) => {
-
             e.preventDefault();
-
             deferredPrompt = e;
-
-            mostrarToast('Aplicativo pronto para instalar');
-
+            if (typeof mostrarToast === 'function') {
+                mostrarToast('Aplicativo pronto para instalar');
+            }
         });
 
-        // ======================================================
-        // SERVICE WORKER
-        // ======================================================
-
         if ('serviceWorker' in navigator) {
-
             window.addEventListener('load', () => {
-
                 navigator.serviceWorker.register('./sw.js')
-
-                    .then(() => {
-
-                        console.log('Service Worker registrado');
-
-                    })
-
-                    .catch(err => {
-
-                        console.log('Erro SW:', err);
-
-                    });
-
+                    .then(() => console.log('Service Worker registrado'))
+                    .catch(err => console.log('Erro SW:', err));
             });
-
         }
-
     </script>
 
 </body>
