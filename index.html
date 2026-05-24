@@ -1286,7 +1286,7 @@ async function carregarDadosSupabase() {
             mostrarTela('perfil');
         }
 
-        function atualizarHistoricoPerfil(matriz) {
+       function atualizarHistoricoPerfil(matriz) {
 
     const div =
         document.getElementById(
@@ -1331,7 +1331,7 @@ async function carregarDadosSupabase() {
         const titulo =
             criarElemento(
                 'p',
-                'font-bold text-gray-800 dark:text-gray-100 mt-2',
+                'font-bold text-gray-800 dark:text-gray-100 mb-3',
                 'Diagnósticos:'
             );
 
@@ -1353,11 +1353,28 @@ async function carregarDadosSupabase() {
             const item =
                 criarElemento(
                     'div',
-                    `bg-gray-50 dark:bg-gray-800 border p-2 rounded mb-2 border-l-4 ${cor}`
+                    `bg-gray-50 dark:bg-gray-800
+                     border
+                     p-3
+                     rounded
+                     mb-3
+                     border-l-4
+                     ${cor}`
                 );
 
-            item.textContent =
+            let texto =
                 `Ano ${h.ano}: ${h.situacao}`;
+
+            if (
+                h.obs &&
+                h.obs !== '-'
+            ) {
+
+                texto += ` • ${h.obs}`;
+
+            }
+
+            item.textContent = texto;
 
             div.appendChild(item);
 
@@ -1377,7 +1394,7 @@ async function carregarDadosSupabase() {
         const tituloPartos =
             criarElemento(
                 'p',
-                'font-bold text-gray-800 dark:text-gray-100 mt-4',
+                'font-bold text-gray-800 dark:text-gray-100 mt-4 mb-3',
                 'Partos Registrados:'
             );
 
@@ -1395,11 +1412,22 @@ async function carregarDadosSupabase() {
             const item =
                 criarElemento(
                     'div',
-                    'bg-gray-50 dark:bg-gray-800 border p-2 rounded mb-2 border-l-4 border-l-jsgreen-500'
+                    'bg-gray-50 dark:bg-gray-800 border p-3 rounded mb-3 border-l-4 border-l-jsgreen-500'
                 );
 
-            item.textContent =
+            let texto =
                 `${formatarData(p.data)} • ${p.sexo}`;
+
+            if (
+                p.obs &&
+                p.obs !== '-'
+            ) {
+
+                texto += ` • ${p.obs}`;
+
+            }
+
+            item.textContent = texto;
 
             div.appendChild(item);
 
