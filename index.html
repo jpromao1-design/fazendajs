@@ -897,7 +897,12 @@ if (supabaseClient) {
                 table: 'matrizes'
             },
 
-            async () => {
+            async (payload) => {
+
+    console.log(
+        'Realtime EVENTO:',
+        payload
+    );
 
                 console.log(
                     'Realtime Supabase: atualização recebida.'
@@ -932,7 +937,14 @@ if (supabaseClient) {
             }
         )
 
-        .subscribe();
+        .subscribe((status) => {
+
+    console.log(
+        'Realtime STATUS:',
+        status
+    );
+
+});
 
 }
         });
